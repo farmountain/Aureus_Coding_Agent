@@ -1,0 +1,138 @@
+# AUREUS Self-Governance Policy
+# 
+# This policy governs how Aureus can modify itself during self-play/self-improvement.
+# It applies the same 3-tier governance (GVUFD→SPK→UVUAS) to Aureus's own code.
+
+version: "1.0"
+
+project:
+  name: "Aureus Coding Agent"
+  root: "."  # Aureus project root
+  language: "python"
+  type: "coding-agent"
+  description: "Self-governance policy for Aureus agent self-improvement"
+
+# Budgets for modifying Aureus itself
+budgets:
+  max_loc: 10000              # Can grow to 10K LOC
+  max_modules: 50             # Prevent module explosion
+  max_files: 100              # Keep architecture clean
+  max_dependencies: 25        # Minimize external dependencies
+  max_complexity_per_function: 15
+  max_nesting_depth: 4
+
+# What Aureus can modify about itself
+permissions:
+  file_operations:
+    # Can modify agent source code
+    - pattern: "src/**/*.py"
+      operations: ["read", "write"]
+      description: "Agent implementation code"
+    
+    # Can modify and add tests
+    - pattern: "tests/**/*.py"
+      operations: ["read", "write"]
+      description: "Test code"
+    
+    # Can update documentation
+    - pattern: "docs/**/*.md"
+      operations: ["read", "write"]
+      description: "Documentation"
+    
+    # Can modify examples
+    - pattern: "examples/**/*.yaml"
+      operations: ["read", "write"]
+      description: "Policy examples"
+    
+    # Can update configuration
+    - pattern: "config/**/*.yaml"
+      operations: ["read", "write"]
+      description: "Configuration files"
+    
+    # Can read (but not write) package config
+    - pattern: "pyproject.toml"
+      operations: ["read"]
+      description: "Package configuration (manual review required)"
+    
+    # Can read (but not write) README
+    - pattern: "README.md"
+      operations: ["read"]
+      description: "Main README (manual review for major changes)"
+  
+  # Patterns that CANNOT be modified (immutable)
+  forbidden_patterns:
+    - pattern: ".git/**"
+      reason: "Version control must not be modified"
+    
+    - pattern: "LICENSE"
+      reason: "License is immutable"
+    
+    - pattern: "COPYRIGHT"
+      reason: "Copyright is immutable"
+    
+    - pattern: "src/governance/principles.py"
+      reason: "Core principles are immutable"
+    
+    - pattern: "src/security/sandbox.py"
+      reason: "Security boundaries are immutable"
+    
+    - pattern: "**/__pycache__/**"
+      reason: "Build artifacts"
+    
+    - pattern: ".aureus/**"
+      reason: "Metadata directory"
+
+# Cost thresholds for self-modifications
+cost_thresholds:
+  warning: 200.0              # Warn when change approaches this
+  prompt: 500.0               # Require confirmation above this
+  rejection: 2000.0           # Hard reject above this
+  session_limit: 5000.0       # Total LOC per self-play session
+
+# Simplification rules (when Aureus code grows too complex)
+simplification_config:
+  trigger_at_budget_percent: 80    # Trigger at 80% of max_loc
+  mandatory: true                  # Must simplify when triggered
+  target_reduction: 0.15           # Aim for 15% reduction
+
+# Self-play specific configuration
+self_play:
+  enabled: true
+  max_iterations: 10000            # Maximum self-play iterations
+  require_test_pass: true          # All tests must pass
+  require_performance_improve: true # Performance must improve or stay same
+  validate_principles: true        # Principles must stay intact
+  
+  # Areas for improvement
+  improvement_areas:
+    - "Cost estimation accuracy"
+    - "Plan decomposition quality"
+    - "Memory pattern recognition"
+    - "Alternative generation"
+    - "Performance optimization"
+  
+  # Metrics to optimize
+  optimization_metrics:
+    - name: "cost_estimation_error"
+      goal: "minimize"
+      threshold: 0.15  # Target <15% error
+    
+    - name: "plan_success_rate"
+      goal: "maximize"
+      threshold: 0.90  # Target >90% success
+    
+    - name: "test_pass_rate"
+      goal: "maximize"
+      threshold: 1.0   # Must be 100%
+    
+    - name: "memory_retrieval_speed"
+      goal: "minimize"
+      threshold: 100   # Target <100ms
+
+# Validation rules
+validation:
+  require_tests: true              # All new code needs tests
+  min_test_coverage: 80            # 80% minimum coverage
+  max_cyclomatic_complexity: 15    # Per-function complexity limit
+  require_docstrings: true         # All public functions need docs
+  enforce_type_hints: true         # Use type annotations

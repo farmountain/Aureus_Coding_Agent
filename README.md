@@ -6,250 +6,194 @@ AUREUS is an AI coding agent that operates as a **semantic compiler**, transform
 
 Unlike traditional AI coding agents that optimize for local correctness, AUREUS operates as a **compiler with governance constraints**:
 
-* **Semantic parsing** (GVUFD) — Intent → bounded specifications
-* **Optimization passes** (SPK) — Cost-aware planning with alternatives
-* **Code generation** (UVUAS) — Governed implementation with verification
-* **Deterministic constraints** — Type-safe governance enforced at compile-time
-* **Guaranteed properties** — Budget compliance, termination, rollback safety
+- **Semantic parsing (GVUFD)** — Intent → bounded specifications
+- **Optimization passes (SPK)** — Cost-aware planning with alternatives
+- **Code generation (UVUAS)** — Governed implementation with verification
+- **Memory & Learning** — Pattern extraction from successful sessions
+- **Deterministic constraints** — Type-safe governance enforced at compile-time
+- **Guaranteed properties** — Budget compliance, termination, rollback safety
 
 Just as traditional compilers transform code → machine instructions, AUREUS transforms intent → governed software.
 
-**Target**: 4k LOC core | **Hard Limit**: 6k LOC | **Architecture**: Compiler-grade with formal guarantees
+**Current Status:** Phase 3++ Complete ✅  
+**Total:** 9,223 LOC | 302 tests (100% pass) | Production Ready
+
+## Key Features
+
+- ✅ **Governance-First**: Policy-driven development with budgets and constraints
+- ✅ **3-Tier Architecture**: GVUFD → SPK → UVUAS semantic compilation pipeline
+- ✅ **Code Separation**: Formal boundaries between agent and user workspace
+- ✅ **Immutable Principles**: 7 user-facing guarantees (backed by 18 technical safety constants)
+- ✅ **Self-Play Capability**: Authorized self-improvement with governance
+- ✅ **Memory System**: Learn from past sessions, extract patterns
+- ✅ **Model Agnostic**: Support for Anthropic, OpenAI, Google, local LLMs
+- ✅ **Production Ready**: Complete logging, monitoring, configuration management
 
 ---
 
-## Core Philosophy
+## Quick Start
 
-Most AI coding agents optimize for **local correctness** ("Does this function work?").
+### Installation
 
-AUREUS optimizes for **global utility** ("Does this change improve the overall system?"):
+```bash
+# Clone repository
+git clone https://github.com/your-org/aureus-coding-agent.git
+cd aureus-coding-agent
 
-1. **Global architectural coherence** — Every change maintains system-wide design integrity
-2. **Bounded complexity growth** — Hard limits prevent uncontrolled expansion
-3. **Cost-aware execution** — Every action has a measurable complexity cost
-4. **Policy-enforced tool usage** — No tool executes without explicit permission
-5. **Continuous simplification** — Reflexive agents remove unnecessary complexity
+# Install dependencies
+pip install -e .
 
-**The 3-tier system unifies local and global**: GVUFD translates global goals → local constraints, SPK prices local changes → global cost, UVUAS executes locally correct code → verified against global utility.
+# Verify installation
+pytest tests/ -v
+```
 
-**Result**: Changes are both locally correct (pass tests, valid syntax) AND globally beneficial (improve architecture, stay within budgets).
+### Basic Usage
 
----
+1. **Initialize a project with governance policy:**
 
-## Architecture Overview
+```bash
+aureus init --project-name "My API" --max-loc 1000
+```
 
-AUREUS follows a **3-Tier Compiler Architecture**:
+This creates `.aureus/policy.yaml` with your project constraints.
 
-### Tier 1 — Global Value Utility Function Designer (GVUFD)
-**Semantic Parser & Type Checker**
+2. **Execute a coding task:**
 
-Converts natural language intent into bounded specifications (semantic AST):
+```bash
+aureus build --spec specification.yaml --policy .aureus/policy.yaml
+```
 
-* Success definition
-* Forbidden patterns (governance type system)
-* LOC / module / dependency budgets (constraint enforcement)
-* Acceptance tests
-* Risk boundaries
+3. **View memory and learned patterns:**
 
-Like a parser builds AST from code, GVUFD builds specifications from intent.
+```bash
+# List all sessions
+aureus memory list-sessions
 
----
+# Show session details
+aureus memory show-trajectory SESSION_ID
 
-### Tier 2 — Self-Pricing Kernel (SPK)
-**Optimizer & Cost Analyzer**
+# View learned patterns
+aureus memory show-patterns
 
-Performs multi-pass optimization on specifications:
+# Export Architecture Decision Record
+aureus memory export-adr SESSION_ID --output decision.md
+```
 
-* Cost calculation (ΔLOC, dependencies, abstractions)
-* Budget enforcement (compile-time constraint checking)
-* Alternative generation (optimization passes)
-* Risk assessment (static analysis)
+### Configuration
 
-Like a compiler optimizer reduces instructions, SPK minimizes complexity cost.
+Create `aureus-config.yaml`:
 
----
+```yaml
+environment: development
 
-### Tier 3 — Unified Value Utility Agent Swarm (UVUAS)
-**Code Generator & Verifier**
+logging:
+  log_level: INFO
+  log_dir: ./logs
 
-Generates governed implementations with verification:
+model:
+  provider: anthropic  # or openai, google, mock
+  api_key: ${AUREUS_MODEL_API_KEY}
+  timeout: 30.0
 
-* **Planner** — Decomposes to intermediate representation (IR)
-* **Builder** — Code generation from IR
-* **Tester** — Runtime verification
-* **Critic** — Static analysis for violations
-* **Reflexion** — Peephole optimization (simplification)
+governance:
+  policy_path: .aureus/policy.yaml
+  enforce_budgets: true
 
-Like a compiler backend, UVUAS emits correct, optimized output.
+self_play:
+  enabled: false
+  require_tests_pass: true
+```
 
-**Result**: Deterministic, governed software generation with formal guarantees.
+Or use environment variables:
 
----
-
-## Compilation Pipeline
-
-The semantic compilation flow:
-
-1. **Context Loading** — Load project state, governance policy, memory (environment setup)
-2. **Semantic Parsing** — GVUFD converts intent → specification (AST generation)
-3. **Type Checking** — Validate against governance constraints (compile-time checks)
-4. **Optimization** — SPK minimizes cost, generates alternatives (optimization passes)
-5. **IR Generation** — Plan creation with priced actions (intermediate representation)
-6. **Code Generation** — UVUAS implements from IR (backend codegen)
-7. **Verification** — Test against acceptance criteria (runtime validation)
-8. **Peephole Optimization** — Reflexion simplifies output (post-processing)
-9. **Memory Persistence** — Log for learning and rollback (debugging symbols)
-
-**Like a compiler**: Deterministic transformation with guaranteed properties.
-
----
-
-## Model-Agnostic Brain
-
-AUREUS supports:
-
-* Anthropic models (Claude)
-* OpenAI models (GPT-4, o1, etc.)
-* Google models (Gemini)
-* Local LLMs (Ollama, LM Studio, etc.)
-* Future providers
-
-**The harness owns correctness.**  
-**The model is interchangeable.**
-
----
-
-## Tool Bus
-
-All tools are permission-gated and priced:
-
-* File read/write
-* Code search (semantic & grep)
-* Shell execution
-* Git operations
-* Web fetch (optional)
-* MCP connectors (optional)
-
-Each tool call passes through:
-
-1. **Policy Gate** — Permission check
-2. **Pricing Gate** — Complexity budget check
-3. **Permission Layer** — Sandbox enforcement
-4. **Snapshot/rollback** — Safe execution with revert capability
-
----
-
-## Memory System (Minimal & Structured)
-
-AUREUS memory is intentionally lightweight:
-
-1. **Project Policy Memory** (persistent YAML/JSON)
-2. **Architecture Decisions** (ADR format)
-3. **Session Trajectories** (structured logs)
-4. **Cost/Evidence Logs** (audit trail)
-
-No heavy vector DB required for MVP.
-
----
-
-## Why AUREUS Exists
-
-AI coding tools tend to:
-
-* Inflate abstractions unnecessarily
-* Add unnecessary architectural layers
-* Introduce premature frameworks
-* Re-invent solved problems
-* Drift architecturally over sessions
-
-**AUREUS prevents that by enforcing:**
-
-* Hard architectural budgets
-* Forbidden pattern lists
-* Simplification-first reflexion
-* Cost-aware governance
-
----
-
-## Target Design Goals
-
-* **4k LOC-class architecture** (core runtime)
-* **≤ 6 modules** (high cohesion)
-* **≤ 25 files** (core, excluding tests/examples)
-* **≤ 15 dependencies** (minimal external reliance)
-* **Deterministic governance core** (no randomness in policy)
-* **Pluggable model providers** (swap LLMs seamlessly)
-
----
-
-## Roadmap Highlights
-
-See [roadmap.md](roadmap.md) for full details.
-
-* **Phase 1**: CLI runtime, policy spec, pricing kernel, tool permission framework
-* **Phase 2**: Memory stabilization, ADR writer, cost model refinement
-* **Phase 3**: Skills system, hooks, MCP connector layer
-* **Phase 4**: Enterprise hardening (RBAC, audit logs, policy DSL)
-
----
-
-## Comparison
-
-| Feature                  | Typical AI Coding Agent | AUREUS    |
-| ------------------------ | ----------------------- | --------- |
-| Model-coupled            | Yes                     | No        |
-| Complexity governance    | Weak                    | Strong    |
-| Architectural budgets    | No                      | Yes       |
-| Reflexive simplification | Rare                    | Mandatory |
-| Tool permission gating   | Partial                 | Explicit  |
-| Cost-based planning      | No                      | Yes       |
-| Forbidden patterns       | No                      | Enforced  |
-| Rollback capability      | Limited                 | Built-in  |
+```bash
+export AUREUS_MODEL_PROVIDER=anthropic
+export AUREUS_MODEL_API_KEY=your-api-key
+export AUREUS_LOG_LEVEL=DEBUG
+```
 
 ---
 
 ## Documentation
 
-* [Architecture Overview](architecture.md) — System layers, execution flow, governance invariants
-* [Solution Specification](solution.md) — Engineering details, module interfaces, schemas
-* [Roadmap](roadmap.md) — Development phases and milestones
+### Core Documentation
+- 📖 [Architecture Overview](architecture.md) — 3-tier system design, execution flow
+- 📖 [Solution Specification](solution.md) — Engineering details, module interfaces
+- 📖 [Code Separation Boundaries](docs/CODE_SEPARATION_BOUNDARIES.md) — Agent vs workspace separation
+- 📖 [Design Decisions](docs/design-decisions.md) — Architectural choices and rationale
+
+### Reports & Assessments
+- 📊 [Phase 3+ Complete Report](PHASE_3_PLUS_COMPLETE_REPORT.md) — Production infrastructure implementation
+- 📊 [Phase 3++ Complete Report](PHASE_3_PLUSPLUS_COMPLETE.md) — Placeholder removal and full E2E implementation
+- 📊 [Project Summary](PROJECT_SUMMARY.md) — Complete metrics and achievements
+
+### Guides
+- 🚀 [Roadmap](roadmap.md) — Development phases and milestones
+- 🎯 [CLI Examples](docs/cli-examples.md) — Command-line usage patterns
+- 🔒 [Security & Sandbox](src/security/) — Boundary enforcement implementation
+
+---
+
+## Architecture Comparison
+
+| Feature | Traditional AI Agent | AUREUS |
+|---------|---------------------|--------|
+| Governance | Weak/None | Policy-enforced |
+| Code Separation | Unclear | Formal boundaries |
+| Budgets | No | LOC/Module/Dependency |
+| Learning | Limited | Pattern extraction |
+| Self-Improvement | No | Authorized self-play |
+| Model Dependency | Coupled | Pluggable |
+| Rollback | Limited | Built-in |
+| Monitoring | Basic | Production-grade |
 
 ---
 
 ## Contributing
 
-AUREUS is an open-source project aligned with the broader **AUREUS ecosystem** of governance-first development tools.
+We welcome contributions that align with AUREUS's governance-first philosophy.
 
-Contributions should:
-* Respect architectural budgets
-* Pass governance checks
-* Include tests and documentation
-* Follow simplification-first principles
+**Before contributing:**
+1. Read [architecture.md](architecture.md) to understand the 3-tier system
+2. Review [Code Separation Boundaries](docs/CODE_SEPARATION_BOUNDARIES.md)
+3. Ensure all tests pass: `pytest tests/ -v`
+
+**Contribution guidelines:**
+- ✅ Respect architectural budgets (see `aureus-self-policy.yaml`)
+- ✅ Include tests for all new features
+- ✅ Add docstrings to public APIs
+- ✅ Update documentation for user-facing changes
+- ✅ Follow existing code style and patterns
+- ✅ Keep changes focused and atomic
+
+**Pull Request Process:**
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Make changes and add tests
+4. Run full test suite: `pytest tests/ -v`
+5. Update documentation as needed
+6. Submit PR with clear description
 
 ---
 
 ## License
 
-Apache 2.0
+**Business Source License 1.1** (BSL 1.1)
+
+- ✅ Free for development, testing, and non-production use
+- ✅ Converts to Apache 2.0 on **February 27, 2029**
+- ✅ See [LICENSE](LICENSE) for complete terms
+
+For commercial production use before 2029, contact for licensing options.
 
 ---
 
-## Project Status
+## Community & Support
 
-**Current Phase**: Architecture & Specification  
-**Target Implementation Language**: Python or TypeScript (TBD based on community feedback)
+- 🐛 **Issues**: Report bugs or request features via GitHub Issues
+- 💬 **Discussions**: Join discussions about architecture and features
+- 📧 **Contact**: farmountain@gmail.com
 
 ---
 
-## Positioning
-
-This project sits at the intersection of:
-
-* Claude Code-style terminal agency
-* Spec-driven development
-* Complexity-aware architecture
-* Reflexive simplification
-* Safe tool orchestration
-
-**AUREUS is not "another coding agent."**  
-**It is a governed coding runtime.**
+**AUREUS** — A semantic compiler that transforms intent into governed software with formal constraints and continuous learning.
