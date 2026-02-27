@@ -1,0 +1,111 @@
+# Example: Large Enterprise Project
+
+version: "1.0"
+
+project:
+  name: "enterprise-platform"
+  root: "/var/projects/enterprise-platform"
+  language: "typescript"
+  type: "web"
+
+budgets:
+  max_loc: 50000
+  max_modules: 20
+  max_files: 150
+  max_dependencies: 50
+  max_class_loc: 500
+  max_function_loc: 75
+  max_inheritance_depth: 3
+
+forbidden_patterns:
+  - name: "god_object"
+    description: "Classes over 500 LOC"
+    rule: "class_loc > 500"
+    severity: "error"
+    auto_fix: true
+  
+  - name: "deep_inheritance"
+    description: "Inheritance depth > 3"
+    rule: "inheritance_depth > 3"
+    severity: "error"
+    auto_fix: false
+  
+  - name: "circular_deps"
+    description: "Circular module dependencies"
+    rule: "has_circular_dependency"
+    severity: "error"
+    auto_fix: false
+  
+  - name: "any_type_abuse"
+    description: "Excessive use of 'any' type in TypeScript"
+    rule: "any_count > 5"
+    severity: "warning"
+    auto_fix: true
+  
+  - name: "console_log"
+    description: "console.log in production code"
+    rule: "contains_console_log && !is_test"
+    severity: "warning"
+    auto_fix: true
+
+permissions:
+  tools:
+    file_read: allow
+    file_write: allow
+    file_delete: prompt
+    shell_exec: prompt
+    git_commit: allow
+    git_push: prompt
+    web_fetch: allow
+  
+  file_boundaries:
+    - "/src/**"
+    - "/tests/**"
+    - "/config/**"
+    - "/scripts/**"
+    - "!/node_modules/**"
+    - "!/dist/**"
+    - "!/build/**"
+    - "!/.next/**"
+  
+  shell_whitelist:
+    - "npm test"
+    - "npm run test"
+    - "npm run build"
+    - "npm install"
+    - "npm ci"
+    - "pnpm test"
+    - "pnpm build"
+    - "yarn test"
+    - "tsc"
+    - "eslint"
+    - "prettier"
+  
+  shell_blacklist:
+    - "rm -rf /"
+    - "rm -rf *"
+    - "sudo"
+    - "chmod 777"
+    - "eval"
+
+cost_thresholds:
+  warning: 200.0
+  rejection: 1000.0
+  session_limit: 5000.0
+
+simplification:
+  trigger_at_budget_percent: 90
+  mandatory: true
+  target_reduction: 0.15
+
+model_provider:
+  primary: "anthropic"
+  fallback: "openai"
+  model: "claude-3-5-sonnet-20241022"
+  temperature: 0.6
+  max_tokens: 16384
+
+integrations:
+  mcp_enabled: true
+  skills_enabled: true
+  hooks_enabled: true

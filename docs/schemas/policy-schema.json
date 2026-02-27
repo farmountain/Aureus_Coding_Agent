@@ -1,0 +1,308 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AUREUS Policy Schema",
+  "description": "Policy configuration for AUREUS Coding Agent governance",
+  "type": "object",
+  "required": ["version", "project", "budgets", "permissions"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Policy schema version",
+      "pattern": "^\\d+\\.\\d+$",
+      "example": "1.0"
+    },
+    "project": {
+      "type": "object",
+      "required": ["name", "root"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Project name",
+          "example": "my-awesome-project"
+        },
+        "root": {
+          "type": "string",
+          "description": "Absolute path to project root",
+          "example": "/path/to/project"
+        },
+        "language": {
+          "type": "string",
+          "enum": ["python", "javascript", "typescript", "java", "go", "rust", "other"],
+          "description": "Primary programming language"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["web", "api", "cli", "library", "mobile", "desktop", "other"],
+          "description": "Project type"
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "description": "Architectural complexity budgets",
+      "required": ["max_loc", "max_modules", "max_files", "max_dependencies"],
+      "properties": {
+        "max_loc": {
+          "type": "integer",
+          "description": "Maximum lines of code (core only)",
+          "minimum": 1000,
+          "maximum": 100000,
+          "example": 10000
+        },
+        "max_modules": {
+          "type": "integer",
+          "description": "Maximum number of modules",
+          "minimum": 1,
+          "maximum": 50,
+          "example": 8
+        },
+        "max_files": {
+          "type": "integer",
+          "description": "Maximum number of files (core only)",
+          "minimum": 5,
+          "maximum": 200,
+          "example": 30
+        },
+        "max_dependencies": {
+          "type": "integer",
+          "description": "Maximum external dependencies",
+          "minimum": 0,
+          "maximum": 100,
+          "example": 20
+        },
+        "max_class_loc": {
+          "type": "integer",
+          "description": "Maximum LOC per class/module",
+          "minimum": 50,
+          "maximum": 2000,
+          "default": 500
+        },
+        "max_function_loc": {
+          "type": "integer",
+          "description": "Maximum LOC per function",
+          "minimum": 10,
+          "maximum": 200,
+          "default": 50
+        },
+        "max_inheritance_depth": {
+          "type": "integer",
+          "description": "Maximum inheritance depth",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 2
+        }
+      }
+    },
+    "forbidden_patterns": {
+      "type": "array",
+      "description": "Patterns that are automatically rejected",
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "rule"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Pattern identifier",
+            "example": "god_object"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description",
+            "example": "Classes over 500 LOC"
+          },
+          "rule": {
+            "type": "string",
+            "description": "Detection rule (expression or regex)",
+            "example": "class_loc > 500"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["error", "warning", "info"],
+            "default": "error"
+          },
+          "auto_fix": {
+            "type": "boolean",
+            "description": "Attempt automatic fix via reflexion",
+            "default": false
+          }
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "description": "Tool execution permissions",
+      "required": ["tools"],
+      "properties": {
+        "tools": {
+          "type": "object",
+          "description": "Per-tool permission settings",
+          "properties": {
+            "file_read": {
+              "type": "string",
+              "enum": ["allow", "deny", "prompt"],
+              "default": "allow"
+            },
+            "file_write": {
+              "type": "string",
+              "enum": ["allow", "deny", "prompt"],
+              "default": "allow"
+            },
+            "file_delete": {
+              "type": "string",
+              "enum": ["allow", "deny", "prompt"],
+              "default": "prompt"
+            },
+            "shell_exec": {
+              "type": "string",
+              "enum": ["allow", "deny", "prompt"],
+              "default": "deny"
+            },
+            "git_commit": {
+              "type": "string",
+              "enum": ["allow", "deny", "prompt"],
+              "default": "allow"
+            },
+            "git_push": {
+              "type": "string",
+              "enum": ["allow", "deny", "prompt"],
+              "default": "deny"
+            },
+            "web_fetch": {
+              "type": "string",
+              "enum": ["allow", "deny", "prompt"],
+              "default": "deny"
+            }
+          }
+        },
+        "file_boundaries": {
+          "type": "array",
+          "description": "Allowed/denied file paths (glob patterns)",
+          "items": {
+            "type": "string",
+            "example": "/src/**"
+          },
+          "default": ["**/*"]
+        },
+        "shell_whitelist": {
+          "type": "array",
+          "description": "Allowed shell commands (exact match or regex)",
+          "items": {
+            "type": "string"
+          },
+          "default": ["pytest", "npm test", "make test"]
+        },
+        "shell_blacklist": {
+          "type": "array",
+          "description": "Forbidden shell commands",
+          "items": {
+            "type": "string"
+          },
+          "default": ["rm -rf", "dd", "mkfs", "sudo"]
+        }
+      }
+    },
+    "cost_thresholds": {
+      "type": "object",
+      "description": "Cost threshold configuration",
+      "properties": {
+        "warning": {
+          "type": "number",
+          "description": "Warn when action cost exceeds this",
+          "minimum": 0,
+          "default": 100.0
+        },
+        "rejection": {
+          "type": "number",
+          "description": "Reject when action cost exceeds this",
+          "minimum": 0,
+          "default": 500.0
+        },
+        "session_limit": {
+          "type": "number",
+          "description": "Maximum total cost per session",
+          "minimum": 0,
+          "default": 2000.0
+        }
+      }
+    },
+    "simplification": {
+      "type": "object",
+      "description": "Reflexion simplification settings",
+      "properties": {
+        "trigger_at_budget_percent": {
+          "type": "integer",
+          "description": "Trigger simplification at this budget usage %",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 90
+        },
+        "mandatory": {
+          "type": "boolean",
+          "description": "Require simplification pass on every change",
+          "default": true
+        },
+        "target_reduction": {
+          "type": "number",
+          "description": "Target complexity reduction (0-1 scale)",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.2
+        }
+      }
+    },
+    "model_provider": {
+      "type": "object",
+      "description": "LLM provider configuration",
+      "properties": {
+        "primary": {
+          "type": "string",
+          "enum": ["anthropic", "openai", "google", "local"],
+          "default": "anthropic"
+        },
+        "fallback": {
+          "type": "string",
+          "enum": ["anthropic", "openai", "google", "local", "none"],
+          "default": "none"
+        },
+        "model": {
+          "type": "string",
+          "description": "Specific model name",
+          "example": "claude-3-5-sonnet-20241022"
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 2.0,
+          "default": 0.7
+        },
+        "max_tokens": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 200000,
+          "default": 4096
+        }
+      }
+    },
+    "integrations": {
+      "type": "object",
+      "description": "Optional integrations",
+      "properties": {
+        "mcp_enabled": {
+          "type": "boolean",
+          "description": "Enable Model Context Protocol connectors",
+          "default": false
+        },
+        "skills_enabled": {
+          "type": "boolean",
+          "description": "Enable skills system",
+          "default": true
+        },
+        "hooks_enabled": {
+          "type": "boolean",
+          "description": "Enable lifecycle hooks",
+          "default": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,216 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AUREUS Specification Schema",
+  "description": "Generated specification from Tier 1 GVUFD",
+  "type": "object",
+  "required": ["intent", "success_criteria", "budgets", "risk_level"],
+  "properties": {
+    "intent": {
+      "type": "string",
+      "description": "Original user intent",
+      "example": "Add user authentication with JWT"
+    },
+    "success_criteria": {
+      "type": "array",
+      "description": "Testable success conditions",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "example": [
+        "User can register with email/password",
+        "User can login with valid credentials",
+        "Invalid credentials return 401",
+        "Passwords are hashed with bcrypt"
+      ]
+    },
+    "forbidden_patterns": {
+      "type": "array",
+      "description": "Patterns to avoid in implementation",
+      "items": {
+        "type": "string"
+      },
+      "example": ["god_object", "plaintext_passwords", "global_auth_state"]
+    },
+    "budgets": {
+      "type": "object",
+      "description": "Allocated complexity budgets",
+      "required": ["max_loc_delta", "max_new_files", "max_new_dependencies"],
+      "properties": {
+        "max_loc_delta": {
+          "type": "integer",
+          "description": "Maximum new lines of code",
+          "minimum": 0,
+          "example": 500
+        },
+        "max_new_files": {
+          "type": "integer",
+          "description": "Maximum new files to create",
+          "minimum": 0,
+          "example": 5
+        },
+        "max_new_dependencies": {
+          "type": "integer",
+          "description": "Maximum new dependencies to add",
+          "minimum": 0,
+          "example": 2
+        },
+        "max_new_abstractions": {
+          "type": "integer",
+          "description": "Maximum new classes/interfaces",
+          "minimum": 0,
+          "example": 3
+        },
+        "max_cyclomatic_complexity": {
+          "type": "integer",
+          "description": "Maximum cyclomatic complexity per function",
+          "minimum": 1,
+          "default": 10
+        }
+      }
+    },
+    "acceptance_tests": {
+      "type": "array",
+      "description": "Test cases to verify success",
+      "items": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Test identifier",
+            "example": "test_user_registration"
+          },
+          "description": {
+            "type": "string",
+            "description": "What the test verifies",
+            "example": "Verify user can register with valid email/password"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["unit", "integration", "e2e"],
+            "default": "integration"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"],
+            "default": "high"
+          }
+        }
+      }
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"],
+      "description": "Overall risk assessment",
+      "example": "medium"
+    },
+    "security_considerations": {
+      "type": "array",
+      "description": "Security requirements",
+      "items": {
+        "type": "string"
+      },
+      "example": [
+        "Hash passwords with bcrypt (cost 12)",
+        "Use JWT with 1h expiration",
+        "Validate email format",
+        "Rate limit login attempts"
+      ]
+    },
+    "architectural_constraints": {
+      "type": "array",
+      "description": "Architecture requirements",
+      "items": {
+        "type": "string"
+      },
+      "example": [
+        "Auth logic must be in separate module",
+        "No global authentication state",
+        "Use dependency injection for auth service"
+      ]
+    },
+    "dependencies_needed": {
+      "type": "array",
+      "description": "Required external dependencies",
+      "items": {
+        "type": "object",
+        "required": ["name", "justification"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "bcrypt"
+          },
+          "version": {
+            "type": "string",
+            "example": "^5.1.0"
+          },
+          "justification": {
+            "type": "string",
+            "example": "Industry-standard password hashing"
+          },
+          "alternatives_considered": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["argon2", "scrypt"]
+          }
+        }
+      }
+    },
+    "estimated_cost": {
+      "type": "object",
+      "description": "Estimated complexity cost",
+      "properties": {
+        "loc": {
+          "type": "number",
+          "description": "Lines of code cost",
+          "example": 400.0
+        },
+        "dependencies": {
+          "type": "number",
+          "description": "Dependency cost",
+          "example": 100.0
+        },
+        "abstractions": {
+          "type": "number",
+          "description": "Abstraction cost",
+          "example": 75.0
+        },
+        "security": {
+          "type": "number",
+          "description": "Security risk cost",
+          "example": 30.0
+        },
+        "total": {
+          "type": "number",
+          "description": "Total estimated cost",
+          "example": 605.0
+        }
+      }
+    },
+    "timeline": {
+      "type": "object",
+      "description": "Estimated implementation timeline",
+      "properties": {
+        "planning": {
+          "type": "string",
+          "example": "5 minutes"
+        },
+        "implementation": {
+          "type": "string",
+          "example": "20 minutes"
+        },
+        "testing": {
+          "type": "string",
+          "example": "10 minutes"
+        },
+        "simplification": {
+          "type": "string",
+          "example": "5 minutes"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,108 @@
+# Example: Simple Web API Project
+
+version: "1.0"
+
+project:
+  name: "simple-api"
+  root: "/home/user/projects/simple-api"
+  language: "python"
+  type: "api"
+
+budgets:
+  max_loc: 5000
+  max_modules: 6
+  max_files: 20
+  max_dependencies: 15
+  max_class_loc: 300
+  max_function_loc: 50
+  max_inheritance_depth: 2
+
+forbidden_patterns:
+  - name: "god_object"
+    description: "Classes over 300 LOC"
+    rule: "class_loc > 300"
+    severity: "error"
+    auto_fix: true
+  
+  - name: "deep_inheritance"
+    description: "Inheritance depth > 2"
+    rule: "inheritance_depth > 2"
+    severity: "error"
+    auto_fix: false
+  
+  - name: "circular_deps"
+    description: "Circular module dependencies"
+    rule: "has_circular_dependency"
+    severity: "error"
+    auto_fix: false
+  
+  - name: "global_state"
+    description: "Global mutable state"
+    rule: "has_global_mutable_state"
+    severity: "warning"
+    auto_fix: false
+  
+  - name: "plaintext_secrets"
+    description: "Hardcoded secrets or passwords"
+    rule: "contains_plaintext_secret"
+    severity: "error"
+    auto_fix: false
+
+permissions:
+  tools:
+    file_read: allow
+    file_write: allow
+    file_delete: prompt
+    shell_exec: prompt
+    git_commit: allow
+    git_push: deny
+    web_fetch: prompt
+  
+  file_boundaries:
+    - "/src/**"
+    - "/tests/**"
+    - "/config/**"
+    - "!/node_modules/**"
+    - "!/.venv/**"
+    - "!/.git/**"
+    - "!/build/**"
+  
+  shell_whitelist:
+    - "pytest"
+    - "pytest tests/"
+    - "python -m pytest"
+    - "pip install"
+    - "pip freeze"
+    - "black ."
+    - "ruff check"
+  
+  shell_blacklist:
+    - "rm -rf /"
+    - "dd"
+    - "mkfs"
+    - "sudo"
+    - "chmod 777"
+    - "curl * | sh"
+    - "wget * | sh"
+
+cost_thresholds:
+  warning: 100.0
+  rejection: 500.0
+  session_limit: 2000.0
+
+simplification:
+  trigger_at_budget_percent: 85
+  mandatory: true
+  target_reduction: 0.2
+
+model_provider:
+  primary: "anthropic"
+  fallback: "openai"
+  model: "claude-3-5-sonnet-20241022"
+  temperature: 0.7
+  max_tokens: 8192
+
+integrations:
+  mcp_enabled: false
+  skills_enabled: true
+  hooks_enabled: false

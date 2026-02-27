@@ -1,22 +1,12 @@
 # AUREUS Coding Agent - Git Ignore
 
-# Design and Assessment Documentation (internal working docs)
-architecture.md
-solution.md
-roadmap.md
+# Internal Assessment Documentation (keep private - working analysis docs)
 DESIGN_REVIEW.md
 INTELLIGENT_ARCHITECTURE.md
 GAP_ANALYSIS_2026-02-27.md
 FINAL_ASSESSMENT_2026-02-27.md
-TERMINATION_CONDITIONS.md
 DUAL_LOOP_ARCHITECTURE.md
 SELF_PLAY_ARCHITECTURE.md
-docs/design-decisions.md
-docs/meta-governance.md
-docs/strategic-decisions.md
-docs/gvufd-prompts.md
-docs/error-catalog.md
-docs/repository-indexer-decision.md
 
 # Python
 __pycache__/
