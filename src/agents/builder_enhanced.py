@@ -245,6 +245,7 @@ class EnhancedBuilderAgent(BuilderAgent):
         self,
         policy: Policy,
         storage_dir: Optional[Path] = None,
+        model_provider=None,
         **kwargs
     ):
         """
@@ -253,9 +254,11 @@ class EnhancedBuilderAgent(BuilderAgent):
         Args:
             policy: Governance policy
             storage_dir: Memory storage directory
+            model_provider: LLM provider (OpenAI, Anthropic, or MockProvider)
             **kwargs: Additional args for base BuilderAgent
         """
-        super().__init__(policy=policy, **kwargs)
+        # Pass model_provider to parent BuilderAgent
+        super().__init__(policy=policy, model_provider=model_provider, **kwargs)
         
         # Memory components
         storage_dir = storage_dir or (self.project_root / ".aureus" / "memory")

@@ -8,10 +8,23 @@ from src.model_provider.base import (
     ModelResponse
 )
 
+# Import real providers (lazy load to handle missing dependencies)
+try:
+    from src.model_provider.openai_provider import OpenAIProvider
+except ImportError:
+    OpenAIProvider = None
+
+try:
+    from src.model_provider.anthropic_provider import AnthropicProvider
+except ImportError:
+    AnthropicProvider = None
+
 __all__ = [
     "ModelProvider",
     "BaseModelProvider",
     "MockProvider",
     "ProviderRegistry",
-    "ModelResponse"
+    "ModelResponse",
+    "OpenAIProvider",
+    "AnthropicProvider"
 ]

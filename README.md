@@ -15,19 +15,28 @@ Unlike traditional AI coding agents that optimize for local correctness, AUREUS 
 
 Just as traditional compilers transform code → machine instructions, AUREUS transforms intent → governed software.
 
-**Current Status:** Phase 3++ Complete ✅  
-**Total:** 9,223 LOC | 302 tests (100% pass) | Production Ready
+**Current Status:** Phase 4 - Basic LLM Integration Working (Alpha)  
+**State:** Core functionality operational but needs refinement  
+**Providers:** OpenAI ✅ | Anthropic ✅ | Mock ✅  
+**Known Issues:** File placement, error handling, response parsing need improvement
 
 ## Key Features
 
-- ✅ **Governance-First**: Policy-driven development with budgets and constraints
-- ✅ **3-Tier Architecture**: GVUFD → SPK → UVUAS semantic compilation pipeline
-- ✅ **Code Separation**: Formal boundaries between agent and user workspace
-- ✅ **Immutable Principles**: 7 user-facing guarantees (backed by 18 technical safety constants)
-- ✅ **Self-Play Capability**: Authorized self-improvement with governance
-- ✅ **Memory System**: Learn from past sessions, extract patterns
-- ✅ **Model Agnostic**: Support for Anthropic, OpenAI, Google, local LLMs
-- ✅ **Production Ready**: Complete logging, monitoring, configuration management
+**Working (Alpha Quality):**
+- ✅ **LLM Integration**: OpenAI and Anthropic providers functional (basic)
+- ✅ **Code Generation**: Generates Python code from natural language (needs refinement)
+- ✅ **Governance Framework**: Policy-driven architecture
+- ✅ **3-Tier Architecture**: GVUFD → SPK → UVUAS pipeline
+- ✅ **CLI**: Basic command-line interface
+
+**Needs Work:**
+- ⚠️ **File Organization**: Currently creates files in root (should use proper directories)
+- ⚠️ **Error Handling**: Multiple bugs in permission system, parsing, etc.
+- ⚠️ **Response Parsing**: LLM output parsing is fragile
+- ⚠️ **Test Coverage**: Tests exist but don't cover real LLM integration
+- ⚠️ **Memory System**: Framework exists but needs integration with real generation
+
+**This is experimental alpha software, not production ready.**
 
 ---
 
@@ -40,27 +49,61 @@ Just as traditional compilers transform code → machine instructions, AUREUS tr
 git clone https://github.com/your-org/aureus-coding-agent.git
 cd aureus-coding-agent
 
-# Install dependencies
-pip install -e .
+# Create and activate virtual environment (recommended)
+python -m venv venv
+# On Windows:
+.\venv\Scripts\Activate.ps1
+# On Linux/Mac:
+# source venv/bin/activate
+
+# Install with dev dependencies (includes pytest)
+pip install -e ".[dev]"
 
 # Verify installation
 pytest tests/ -v
 ```
 
 ### Basic Usage
+**AUREUS now generates real code using OpenAI or Anthropic!**
 
 1. **Initialize a project with governance policy:**
 
 ```bash
-aureus init --project-name "My API" --max-loc 1000
+aureus init
 ```
 
-This creates `.aureus/policy.yaml` with your project constraints.
-
-2. **Execute a coding task:**
+2. **Generate code with AI (requires API key):**
 
 ```bash
-aureus build --spec specification.yaml --policy .aureus/policy.yaml
+# Set your API key
+$env:AUREUS_MODEL_PROVIDER="openai"      # or "anthropic"
+$env:AUREUS_MODEL_API_KEY="your-key-here"
+
+# Generate code!
+aureus code "create a function that adds two numbers"
+```
+
+**Real output example:**
+```
+🤖 Using OpenAI provider: gpt-4
+✓ SUCCESS: Build completed
+```
+
+Generated file `generated_create_a_function_that_adds.py`:
+```python
+def add(a: int, b: int) -> int:
+    """
+    Add two numbers and return the result.
+    
+    Args:
+        a: First number
+        b: Second number
+    
+    Returns:
+        Sum of a and b
+    """
+    return a + bvailable)
+aureus memory list-sessions
 ```
 
 3. **View memory and learned patterns:**
@@ -68,34 +111,45 @@ aureus build --spec specification.yaml --policy .aureus/policy.yaml
 ```bash
 # List all sessions
 aureus memory list-sessions
+**Required:** Set your LLM provider and API key to enable code generation.
 
-# Show session details
-aureus memory show-trajectory SESSION_ID
+#### Environment Variables (Recommended)
 
-# View learned patterns
-aureus memory show-patterns
+```bash
+# Windows PowerShell:
+$env:AUREUS_MODEL_PROVIDER="openai"
+$env:AUREUS_MODEL_API_KEY="sk-your-openai-key"
 
-# Export Architecture Decision Record
-aureus memory export-adr SESSION_ID --output decision.md
+# Or use Anthropic:
+$env:AUREUS_MODEL_PROVIDER="anthropic"
+$env:AUREUS_MODEL_API_KEY="sk-ant-your-anthropic-key"
+
+# Linux/Mac:
+export AUREUS_MODEL_PROVIDER=openai
+export AUREUS_MODEL_API_KEY=your-key
 ```
 
-### Configuration
+#### Configuration File
 
-Create `aureus-config.yaml`:
+Create `aureus-config.yaml` in your project root:
 
 ```yaml
 environment: development
 
-logging:
-  log_level: INFO
-  log_dir: ./logs
-
 model:
-  provider: anthropic  # or openai, google, mock
+  provider: openai  # or anthropic, mock
   api_key: ${AUREUS_MODEL_API_KEY}
   timeout: 30.0
 
 governance:
+  policy_path: .aureus/policy.yaml
+  enforce_budgets: true
+```
+
+**Supported Providers:**
+- ✅ `openai` — GPT-4, GPT-3.5-turbo (requires `openai` package + API key)
+- ✅ `anthropic` — Claude 3 (Opus, Sonnet, Haiku) (requires `anthropic` package + API key)
+- ✅ `mock` — For testing (no API key needed, generates placeholder code
   policy_path: .aureus/policy.yaml
   enforce_budgets: true
 
@@ -104,13 +158,11 @@ self_play:
   require_tests_pass: true
 ```
 
-Or use environment variables:
-
-```bash
-export AUREUS_MODEL_PROVIDER=anthropic
-export AUREUS_MODEL_API_KEY=your-api-key
-export AUREUS_LOG_LEVEL=DEBUG
-```
+**Provider Roadmap:**
+- ✅ `mock` — Currently implemented (for architecture testing)
+- ⏳ `anthropic` — Planned for Phase 4 (Claude models)
+- ⏳ `openai` — Planned for Phase 4 (GPT models)
+- ⏳ `google` — Planned for Phase 4 (Gemini models)
 
 ---
 

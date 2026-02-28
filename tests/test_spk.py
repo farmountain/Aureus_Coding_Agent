@@ -72,12 +72,14 @@ class TestLinearCostModel:
         model = LinearCostModel(loc_weight=1.0, dependency_weight=50.0, abstraction_weight=20.0)
         
         # Total: 500 LOC + 3 deps + 5 abstractions = 500 + 150 + 100 = 750
-        cost = model.calculate_total_cost(
+        base_cost, security_cost = model.calculate_total_cost(
             estimated_loc=500,
             estimated_dependencies=3,
-            estimated_abstractions=5
+            estimated_abstractions=5,
+            risk_level="low"
         )
-        assert cost == 750.0
+        assert base_cost == 750.0
+        assert security_cost == 0.0  # Low risk = no additional security cost
 
     def test_configurable_weights(self):
         """Test that cost model weights are configurable"""
@@ -85,12 +87,53 @@ class TestLinearCostModel:
         model = LinearCostModel(loc_weight=2.0, dependency_weight=100.0, abstraction_weight=50.0)
         
         # Total: 500*2 + 3*100 + 5*50 = 1000 + 300 + 250 = 1550
-        cost = model.calculate_total_cost(
+        base_cost, security_cost = model.calculate_total_cost(
             estimated_loc=500,
             estimated_dependencies=3,
-            estimated_abstractions=5
+            estimated_abstractions=5,
+            risk_level="low"
         )
-        assert cost == 1550.0
+        assert base_cost == 1550.0
+        assert security_cost == 0.0  # Low risk = no additional security cost
+
+    def test_risk_based_security_cost_medium(self):
+        """Test medium risk adds 20% security overhead"""
+        model = LinearCostModel()
+        
+        base_cost, security_cost = model.calculate_total_cost(
+            estimated_loc=100,
+            estimated_dependencies=0,
+            estimated_abstractions=0,
+            risk_level="medium"
+        )
+        assert base_cost == 100.0
+        assert abs(security_cost - 20.0) < 0.01  # 20% of 100 (allow floating point tolerance)
+
+    def test_risk_based_security_cost_high(self):
+        """Test high risk adds 50% security overhead"""
+        model = LinearCostModel()
+        
+        base_cost, security_cost = model.calculate_total_cost(
+            estimated_loc=100,
+            estimated_dependencies=0,
+            estimated_abstractions=0,
+            risk_level="high"
+        )
+        assert base_cost == 100.0
+        assert security_cost == 50.0  # 50% of 100
+
+    def test_risk_based_security_cost_critical(self):
+        """Test critical risk doubles the cost (100% overhead)"""
+        model = LinearCostModel()
+        
+        base_cost, security_cost = model.calculate_total_cost(
+            estimated_loc=100,
+            estimated_dependencies=0,
+            estimated_abstractions=0,
+            risk_level="critical"
+        )
+        assert base_cost == 100.0
+        assert security_cost == 100.0  # 100% of 100 (doubles total cost)
 
 
 class TestBudgetEnforcer:

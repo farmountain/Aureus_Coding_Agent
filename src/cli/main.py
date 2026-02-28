@@ -295,47 +295,56 @@ class CodeCommand:
         
         # Implement full GVUFD -> SPK -> UVUAS pipeline
         try:
-            from src.agents.builder_enhanced import BuilderEnhanced
-            from src.memory.trajectory import TrajectoryStore
-            from src.memory.cost_ledger import CostLedger
+            from src.agents.builder_enhanced import EnhancedBuilderAgent
+            from src.model_provider import OpenAIProvider, AnthropicProvider, MockProvider
             from pathlib import Path
+            import os
             
-            # Initialize memory components
+            # Initialize memory directory
             memory_dir = Path(".aureus/memory")
             memory_dir.mkdir(parents=True, exist_ok=True)
             
-            trajectory_store = TrajectoryStore(storage_dir=memory_dir / "trajectories")
-            cost_ledger = CostLedger(storage_dir=memory_dir / "costs")
+            # Create model provider based on environment configuration
+            provider_name = os.getenv("AUREUS_MODEL_PROVIDER", "mock").lower()
+            api_key = os.getenv("AUREUS_MODEL_API_KEY")
             
-            # Initialize enhanced builder with memory
-            builder = BuilderEnhanced(
+            if provider_name == "openai" and OpenAIProvider:
+                if not api_key:
+                    raise CLIError("AUREUS_MODEL_API_KEY environment variable required for OpenAI provider")
+                model_provider = OpenAIProvider(api_key=api_key)
+                print(f"🤖 Using OpenAI provider: {model_provider.model_name}")
+            elif provider_name == "anthropic" and AnthropicProvider:
+                if not api_key:
+                    raise CLIError("AUREUS_MODEL_API_KEY environment variable required for Anthropic provider")
+                model_provider = AnthropicProvider(api_key=api_key)
+                print(f"🤖 Using Anthropic provider: {model_provider.model_name}")
+            else:
+                model_provider = MockProvider()
+                print("⚠️  Using MockProvider (no actual code generation)")
+                print("   Set AUREUS_MODEL_PROVIDER=openai or anthropic with AUREUS_MODEL_API_KEY to enable real LLM")
+            
+            # Initialize enhanced builder with memory and real provider
+            builder = EnhancedBuilderAgent(
                 policy=policy,
-                project_root=Path.cwd(),
-                trajectory_store=trajectory_store,
-                cost_ledger=cost_ledger
+                storage_dir=memory_dir,
+                model_provider=model_provider
             )
             
             # Execute build with full pipeline
             result = builder.build(intent=self.intent)
             
-            # Save trajectory
-            session_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            trajectory_store.save_trajectory(
-                session_id=session_id,
-                actions=builder.execution_log,
-                outcome="success" if result.success else "failure"
-            )
+            # Show execution log for debugging
+            if self.verbose or not result.success:
+                print("\n📋 Execution Log:")
+                for entry in builder.execution_log:
+                    print(f"  - {entry}")
             
             return {
                 "status": "success" if result.success else "failure",
-                "message": f"Build completed for: {policy.project_name}",
-                "intent": self.intent,
-                "policy": policy.project_name,
-                "files_created": result.files_created,
-                "files_modified": result.files_modified,
-                "tests_passed": result.tests_passed,
-                "cost": result.cost.to_dict() if result.cost else None,
-                "session_id": session_id
+                "message": result.message if hasattr(result, 'message') else "Build completed",
+                "files_created": result.files_created if hasattr(result, 'files_created') else [],
+                "files_modified": result.files_modified if hasattr(result, 'files_modified') else [],
+                "cost": result.cost if hasattr(result, 'cost') else 0.0
             }
         
         except Exception as e:
