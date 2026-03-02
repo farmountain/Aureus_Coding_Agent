@@ -101,7 +101,7 @@ class CLIParser:
         
         # Handle code understanding commands (Phase 2)
         if command in ["find", "usages", "impact"]:
-            from src.cli.code_understanding import main_find, main_usages, main_impact
+            from src.cli.commands.code_understanding import main_find, main_usages, main_impact
             if command == "find":
                 sys.exit(main_find(args[1:]))
             elif command == "usages":
@@ -123,8 +123,8 @@ class CLIParser:
         
         # Handle refactoring & review commands (Phase 4)
         if command in ["refactor", "review", "doctor"]:
-            from src.cli.refactoring_review import handle_refactor_command, handle_review_command, handle_doctor_command
-            from src.cli.refactoring_review import add_refactor_parser, add_review_parser, add_doctor_parser
+            from src.cli.commands.refactoring_review import handle_refactor_command, handle_review_command, handle_doctor_command
+            from src.cli.commands.refactoring_review import add_refactor_parser, add_review_parser, add_doctor_parser
             
             # Create parser with subcommands
             parser = argparse.ArgumentParser(prog="aureus")
@@ -148,8 +148,8 @@ class CLIParser:
         
         # Handle learning & growth commands (Phase 5)
         if command in ["adr", "skills", "learn"]:
-            from src.cli.learning_growth import handle_adr_command, handle_skills_command, handle_learn_command
-            from src.cli.learning_growth import add_adr_parser, add_skills_parser, add_learn_parser
+            from src.cli.commands.learning_growth import handle_adr_command, handle_skills_command, handle_learn_command
+            from src.cli.commands.learning_growth import add_adr_parser, add_skills_parser, add_learn_parser
             
             # Create parser with subcommands
             parser = argparse.ArgumentParser(prog="aureus")
@@ -190,7 +190,7 @@ class CLIParser:
         
         # Handle collaboration commands (Phase 6)
         if command == "collaborate":
-            from src.cli.collaboration import add_collaborate_parser, handle_collaborate_command
+            from src.cli.commands.collaboration import add_collaborate_parser, handle_collaborate_command
             
             parser = argparse.ArgumentParser(prog="aureus")
             subparsers = parser.add_subparsers(dest="command")
@@ -315,7 +315,7 @@ class CLIParser:
         """Parse 'explain' command arguments."""
         # Check if "explain code" subcommand
         if len(args) > 0 and args[0] == "code":
-            from src.cli.code_understanding import main_explain_code
+            from src.cli.commands.code_understanding import main_explain_code
             sys.exit(main_explain_code(args[1:]))
         
         # Default target is "last" if nothing specified
@@ -628,7 +628,7 @@ class CodeCommand(BaseCommand):
 
             # Record budget consumption for dashboard
             try:
-                from src.cli.budget_dashboard import BudgetDashboard
+                from src.cli.commands.budget_dashboard import BudgetDashboard
                 dashboard = BudgetDashboard(Path.cwd(), policy)
                 dashboard.record_build(
                     result,
@@ -693,7 +693,7 @@ class CodeCommand(BaseCommand):
 
             # Show compact budget summary after each build
             try:
-                from src.cli.budget_dashboard import BudgetDashboard
+                from src.cli.commands.budget_dashboard import BudgetDashboard
                 dashboard = BudgetDashboard(Path.cwd(), policy)
                 print(dashboard.format_post_build_summary(use_color=self.stream))
             except Exception:
@@ -769,7 +769,7 @@ class StatusCommand(BaseCommand):
 
         # Print budget dashboard inline
         try:
-            from src.cli.budget_dashboard import BudgetDashboard
+            from src.cli.commands.budget_dashboard import BudgetDashboard
             dashboard = BudgetDashboard(Path.cwd(), policy)
             print(dashboard.format_dashboard(verbose=self.verbose))
         except Exception:
@@ -823,7 +823,7 @@ class BudgetCommand(BaseCommand):
     
     def _show_budget(self) -> Dict[str, Any]:
         """Show budget dashboard"""
-        from src.cli.budget_dashboard import BudgetDashboard
+        from src.cli.commands.budget_dashboard import BudgetDashboard
 
         # Load policy (optional — dashboard has safe defaults)
         policy = None
