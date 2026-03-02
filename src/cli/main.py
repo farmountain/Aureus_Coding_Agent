@@ -96,7 +96,7 @@ class CLIParser:
         
         # Handle test-gen separately (delegates to test_commands.py)
         if command == "test-gen":
-            from src.cli.test_commands import main_test_gen
+            from src.cli.commands.test_commands import main_test_gen
             sys.exit(main_test_gen(args[1:]))
         
         # Handle code understanding commands (Phase 2)
@@ -111,7 +111,7 @@ class CLIParser:
         
         # Handle testing & validation commands (Phase 3)
         if command in ["test", "validate", "lint", "debug"]:
-            from src.cli.test_validation import main_test, main_validate, main_lint, main_debug
+            from src.cli.commands.test_validation import main_test, main_validate, main_lint, main_debug
             if command == "test":
                 sys.exit(main_test(args[1:]))
             elif command == "validate":
