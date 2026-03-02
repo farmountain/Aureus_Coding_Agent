@@ -173,7 +173,7 @@ class CLIParser:
         
         # Handle memory commands
         if command == "memory":
-            from src.cli.memory_commands import memory_commands
+            from src.cli.commands.memory_commands import memory_commands
             # Use click's standalone_mode to handle the command
             try:
                 memory_commands.main(args[1:], standalone_mode=True)
@@ -182,7 +182,7 @@ class CLIParser:
         
         # Handle history commands (undo/redo stack - Sprint 1 Item 10)
         if command == "history":
-            from src.cli.history_commands import history_commands
+            from src.cli.commands.history_commands import history_commands
             try:
                 history_commands.main(args[1:], standalone_mode=True)
             except SystemExit as e:
