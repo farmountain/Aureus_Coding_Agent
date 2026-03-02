@@ -1,24 +1,20 @@
 # AUREUS Coding Agent - Git Ignore
 
 # Internal Assessment Documentation (keep private - working analysis docs)
-DESIGN_REVIEW.md
+# Active documents
 INTELLIGENT_ARCHITECTURE.md
 GAP_ANALYSIS_2026-02-27.md
-FINAL_ASSESSMENT_2026-02-27.md
-TERMINATION_CONDITIONS.md
-DUAL_LOOP_ARCHITECTURE.md
-SELF_PLAY_ARCHITECTURE.md
 IMPLEMENTATION_PLAN.md
-CLAUDE_CODE_ALIGNMENT.md
-PHASE1_COMPLETE.md
-PHASE_3_COMPLETION_REPORT.md
-PROJECT_SUMMARY.md
-PHASE_3_PLUS_COMPLETE_REPORT.md
-PHASE_3_PLUSPLUS_COMPLETE.md
-DOCS_VS_CODE_VERIFICATION.md
-CONTINUOUS_ENHANCEMENT_SESSION_2026-02-28.md
 TRACE_ANALYSIS.py
-CONTINUOUS_IMPLEMENTATION_COMPLETE.md
+
+# Archived documents (now in docs/archive/ and docs/history/)
+# docs/archive/
+# docs/history/
+
+# AUREUS Runtime Data
+.aureus/decisions/  # Decision history (potentially sensitive)
+.aureus/memory/     # Session memory and learning data
+.aureus/sessions/   # Session state
 
 # Python
 __pycache__/
@@ -68,6 +64,17 @@ htmlcov/
 # AUREUS Runtime
 .aureus/
 *.aureus.log
+
+# Memory System Runtime Data
+memory/model_metrics/*
+memory/skills/*
+memory/trajectories/*
+!memory/model_metrics/.gitkeep
+!memory/skills/.gitkeep
+!memory/trajectories/.gitkeep
+
+# Workspace - Generated code outputs
+workspace/
 
 # Temporary files
 *.tmp
