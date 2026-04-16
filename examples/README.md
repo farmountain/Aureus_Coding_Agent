@@ -8,7 +8,7 @@ This directory contains example scripts demonstrating AUREUS usage.
 
 **File**: `example_mock_provider.py`
 
-Demonstrates the complete GVUFD → SPK → UVUAS pipeline using the MockProvider (no API key needed).
+Demonstrates the complete IntentParser → Planner → Generator pipeline using the MockProvider (no API key needed).
 
 ```bash
 python examples/example_mock_provider.py

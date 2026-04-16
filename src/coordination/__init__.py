@@ -1,4 +1,4 @@
-"""Coordination package - Integrates GVUFD + SPK + UVUAS"""
+"""Coordination package - Integrates IntentParser + Planner + Generator"""
 
 from src.coordination.three_tier_coordinator import (
     ThreeTierCoordinator,

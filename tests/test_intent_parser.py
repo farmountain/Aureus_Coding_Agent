@@ -1,5 +1,5 @@
 """
-Tests for GVUFD (Tier 1) - Specification Generator.
+Tests for IntentParser (Tier 1) - Specification Generator.
 TDD: Tests written before implementation.
 """
 
@@ -9,11 +9,11 @@ from unittest.mock import Mock, patch
 
 
 class TestSpecificationGenerator:
-    """Test GVUFD specification generation from intent."""
+    """Test IntentParser specification generation from intent."""
     
     def test_generate_spec_from_simple_intent(self):
-        """GVUFD should generate specification from simple intent."""
-        from src.governance.gvufd import SpecificationGenerator
+        """IntentParser should generate specification from simple intent."""
+        from src.governance.intent_parser import SpecificationGenerator
         from src.interfaces import Policy, Budget, Specification
         
         # Setup
@@ -40,8 +40,8 @@ class TestSpecificationGenerator:
         assert spec.budgets.max_loc_delta > 0
     
     def test_generate_spec_with_security_intent(self):
-        """GVUFD should detect security-related intents and set high risk."""
-        from src.governance.gvufd import SpecificationGenerator
+        """IntentParser should detect security-related intents and set high risk."""
+        from src.governance.intent_parser import SpecificationGenerator
         from src.interfaces import Policy, Budget
         
         budget = Budget(max_loc=10000, max_modules=8, max_files=30, max_dependencies=20)
@@ -64,8 +64,8 @@ class TestSpecificationGenerator:
         assert len(spec.security_considerations) > 0
     
     def test_generate_allocates_budget(self):
-        """GVUFD should allocate appropriate budgets from policy."""
-        from src.governance.gvufd import SpecificationGenerator
+        """IntentParser should allocate appropriate budgets from policy."""
+        from src.governance.intent_parser import SpecificationGenerator
         from src.interfaces import Policy, Budget
         
         budget = Budget(max_loc=5000, max_modules=8, max_files=30, max_dependencies=20)
@@ -85,8 +85,8 @@ class TestSpecificationGenerator:
         assert spec.budgets.max_new_files <= budget.max_files
     
     def test_generate_creates_success_criteria(self):
-        """GVUFD should generate testable success criteria."""
-        from src.governance.gvufd import SpecificationGenerator
+        """IntentParser should generate testable success criteria."""
+        from src.governance.intent_parser import SpecificationGenerator
         from src.interfaces import Policy, Budget
         
         budget = Budget(max_loc=10000, max_modules=8, max_files=30, max_dependencies=20)
@@ -111,8 +111,8 @@ class TestSpecificationGenerator:
             assert len(criterion) > 10  # Not trivial
     
     def test_generate_respects_forbidden_patterns(self):
-        """GVUFD should include policy forbidden patterns in spec."""
-        from src.governance.gvufd import SpecificationGenerator
+        """IntentParser should include policy forbidden patterns in spec."""
+        from src.governance.intent_parser import SpecificationGenerator
         from src.interfaces import Policy, Budget, ForbiddenPattern
         
         budget = Budget(max_loc=10000, max_modules=8, max_files=30, max_dependencies=20)
@@ -145,7 +145,7 @@ class TestProjectAnalyzer:
     
     def test_analyze_python_project(self, tmp_path):
         """ProjectAnalyzer should detect Python project characteristics."""
-        from src.governance.gvufd import ProjectAnalyzer
+        from src.governance.intent_parser import ProjectAnalyzer
         
         # Create dummy Python project structure
         (tmp_path / "src").mkdir()
@@ -162,7 +162,7 @@ class TestProjectAnalyzer:
     
     def test_analyze_empty_project(self, tmp_path):
         """ProjectAnalyzer should handle empty/new projects."""
-        from src.governance.gvufd import ProjectAnalyzer
+        from src.governance.intent_parser import ProjectAnalyzer
         
         analyzer = ProjectAnalyzer()
         profile = analyzer.analyze(tmp_path)
@@ -177,7 +177,7 @@ class TestBudgetAllocator:
     
     def test_allocate_for_small_feature(self):
         """BudgetAllocator should allocate small budgets for simple features."""
-        from src.governance.gvufd import BudgetAllocator
+        from src.governance.intent_parser import BudgetAllocator
         from src.interfaces import Budget
         
         policy_budget = Budget(
@@ -202,7 +202,7 @@ class TestBudgetAllocator:
     
     def test_allocate_for_large_feature(self):
         """BudgetAllocator should allocate larger budgets for complex features."""
-        from src.governance.gvufd import BudgetAllocator
+        from src.governance.intent_parser import BudgetAllocator
         from src.interfaces import Budget
         
         policy_budget = Budget(
@@ -224,7 +224,7 @@ class TestBudgetAllocator:
     
     def test_allocate_respects_policy_limits(self):
         """BudgetAllocator should never exceed policy limits."""
-        from src.governance.gvufd import BudgetAllocator
+        from src.governance.intent_parser import BudgetAllocator
         from src.interfaces import Budget
         
         policy_budget = Budget(

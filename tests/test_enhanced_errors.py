@@ -187,7 +187,7 @@ class TestSpecificErrorTypes:
     def test_intent_too_vague(self):
         err = IntentTooVagueError("do something", ["target", "scope"])
         out = stripped(ErrorFormatter(use_color=False).format_aureus_error(err))
-        assert "GVUFD_001" in out
+        assert "IntentParser_001" in out
 
     def test_tool_execution_error(self):
         err = ToolExecutionError("file_write", "Permission denied")
@@ -225,7 +225,7 @@ class TestFormatBuildFailure:
         ))
         assert "Reduce scope" in out
         assert "Split into 2 phases" in out
-        assert "SPK suggests" in out
+        assert "Planner suggests" in out
 
     def test_shows_max_4_alternatives(self):
         alts = [{"description": f"Option {i}"} for i in range(6)]

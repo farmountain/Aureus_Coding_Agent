@@ -11,8 +11,8 @@ Error Code Format: CATEGORY_NNN
 Categories:
 - BUDGET: Budget and complexity violations
 - POLICY: Policy and permission violations
-- GVUFD: Specification generation errors (user-facing: "specification errors")
-- SPK: Cost analysis and budget errors (user-facing: "cost analysis errors")
+- IntentParser: Specification generation errors (user-facing: "specification errors")
+- Planner: Cost analysis and budget errors (user-facing: "cost analysis errors")
 - TOOL: Tool execution errors
 - CONTEXT: Context assembly errors
 - GIT: Git operation errors
@@ -241,9 +241,9 @@ class ForbiddenPatternError(AUREUSError):
 
 
 # ============================================================================
-# Specification Generation Errors (GVUFD_xxx)
+# Specification Generation Errors (IntentParser_xxx)
 # User-facing: "Specification errors"
-# Developer context: GVUFD (Global Value Utility Function Designer)
+# Developer context: IntentParser (Intent Parser)
 # ============================================================================
 
 class IntentTooVagueError(AUREUSError):
@@ -251,7 +251,7 @@ class IntentTooVagueError(AUREUSError):
     
     def __init__(self, intent: str, missing_details: List[str]):
         super().__init__(
-            code="GVUFD_001",
+            code="IntentParser_001",
             message="Intent is too vague to generate specification",
             details={
                 "intent": intent,
@@ -266,7 +266,7 @@ class SpecificationGenerationError(AUREUSError):
     
     def __init__(self, intent: str, reason: str):
         super().__init__(
-            code="GVUFD_002",
+            code="IntentParser_002",
             message="Failed to generate specification",
             details={"intent": intent, "reason": reason},
             suggestion="Try rephrasing the intent or providing more context"
@@ -278,7 +278,7 @@ class AmbiguousIntentError(AUREUSError):
     
     def __init__(self, intent: str, interpretations: List[str]):
         super().__init__(
-            code="GVUFD_003",
+            code="IntentParser_003",
             message="Intent is ambiguous",
             details={
                 "intent": intent,
@@ -289,9 +289,9 @@ class AmbiguousIntentError(AUREUSError):
 
 
 # ============================================================================
-# Cost Analysis Errors (SPK_xxx)
+# Cost Analysis Errors (Planner_xxx)
 # User-facing: "Cost analysis errors"
-# Developer context: SPK (Self-Pricing Kernel)
+# Developer context: Planner (Planner)
 # ============================================================================
 
 class CostCalculationError(AUREUSError):
@@ -299,7 +299,7 @@ class CostCalculationError(AUREUSError):
     
     def __init__(self, reason: str, action: str):
         super().__init__(
-            code="SPK_001",
+            code="Planner_001",
             message="Failed to calculate cost",
             details={"reason": reason, "action": action},
             suggestion="Check action parameters and try again"
@@ -311,7 +311,7 @@ class SessionCostLimitError(AUREUSError):
     
     def __init__(self, current: float, limit: float):
         super().__init__(
-            code="SPK_002",
+            code="Planner_002",
             message=f"Session cost limit reached ({current:.1f}/{limit:.1f})",
             details={
                 "current_cost": current,
@@ -533,14 +533,14 @@ ERROR_CATALOG = {
     "POLICY_002": "Permission denied",
     "POLICY_003": "Forbidden pattern detected",
     
-    # GVUFD errors
-    "GVUFD_001": "Intent too vague",
-    "GVUFD_002": "Specification generation failed",
-    "GVUFD_003": "Ambiguous intent",
+    # IntentParser errors
+    "IntentParser_001": "Intent too vague",
+    "IntentParser_002": "Specification generation failed",
+    "IntentParser_003": "Ambiguous intent",
     
-    # SPK errors
-    "SPK_001": "Cost calculation failed",
-    "SPK_002": "Session cost limit reached",
+    # Planner errors
+    "Planner_001": "Cost calculation failed",
+    "Planner_002": "Session cost limit reached",
     
     # Tool errors
     "TOOL_001": "Tool execution failed",

@@ -1,7 +1,7 @@
 """
 AUREUS Agent Module
 
-Phase 1: Single BuilderAgent (UVUAS Tier 3)
+Phase 1: Single BuilderAgent (Generator Tier 3)
 Phase 2: Multi-agent swarm (Planner, Builder, Tester, Critic, Reflexion)
 """
 

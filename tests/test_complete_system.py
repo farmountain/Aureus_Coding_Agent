@@ -2,9 +2,9 @@
 Final Demonstration: Complete 3-Tier Intelligence with Continuous Learning
 
 This script demonstrates the full AUREUS system working end-to-end:
-1. GVUFD: Intent → Specification
-2. SPK: Specification → Cost validation
-3. UVUAS: Orchestrated execution with:
+1. IntentParser: Intent → Specification
+2. Planner: Specification → Cost validation
+3. Generator: Orchestrated execution with:
    - Context gathering from existing code
    - Memory-based learning
    - Iterative refinement (3 attempts)
@@ -36,9 +36,9 @@ def main():
     
     print_section("AUREUS: 3-Tier Intelligence Semantic Compiler")
     print("\nComponents:")
-    print("  [Tier 1] GVUFD: Global Value Utility Function Designer")
-    print("  [Tier 2] SPK: Self Pricing Kernel")
-    print("  [Tier 3] UVUAS: Unified goal-driven Agent Swarm")
+    print("  [Tier 1] IntentParser: Intent Parser")
+    print("  [Tier 2] Planner: Self Pricing Kernel")
+    print("  [Tier 3] Generator: Unified goal-driven Agent Swarm")
     print("\nEnhancements:")
     print("  + Reflection loop with validation")
     print("  + Iterative refinement (max 3 attempts)")
@@ -131,9 +131,9 @@ def main():
     
     # Check all components
     checks = [
-        ("GVUFD (Tier 1)", True, "Generates bounded specifications"),
-        ("SPK (Tier 2)", True, "Calculates costs and validates budgets"),
-        ("UVUAS (Tier 3)", True, "Orchestrates execution"),
+        ("IntentParser (Tier 1)", True, "Generates bounded specifications"),
+        ("Planner (Tier 2)", True, "Calculates costs and validates budgets"),
+        ("Generator (Tier 3)", True, "Orchestrates execution"),
         ("Reflection loop", all(r['tests_passed'] for r in results), "Validates generated code"),
         ("Iterative refinement", max(r['attempts'] for r in results) <= 3, "Max 3 attempts enforced"),
         ("Context gathering", True, "Reads existing code patterns"),

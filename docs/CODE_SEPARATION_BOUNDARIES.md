@@ -14,7 +14,7 @@
 d:\All_Projects\Aureus_Coding_Agent\
 ├── src/                    # ← AUREUS AGENT CODE
 │   ├── agents/            # Builder, Enhanced Builder
-│   ├── governance/        # GVUFD, SPK
+│   ├── governance/        # IntentParser, Planner
 │   ├── memory/            # Trajectory, Summarization
 │   ├── toolbus/           # Tools (Shell, Git, Web, etc.)
 │   ├── model_provider/    # LLM integration
@@ -124,11 +124,11 @@ Improve EnhancedBuilder to use reinforcement learning for
 better plan decomposition based on past success patterns
 """
 
-# GVUFD analyzes Aureus's own codebase
+# IntentParser analyzes Aureus's own codebase
 spec_generator = SpecificationGenerator()
 spec = spec_generator.generate(intent, aureus_policy)
 
-# SPK prices the change to Aureus itself
+# Planner prices the change to Aureus itself
 pricing_kernel = PricingKernel()
 cost = pricing_kernel.price(spec, aureus_policy)
 
@@ -177,7 +177,7 @@ class LearnedUtilityFunction:
 **Location**: `/aureus/config/`
 
 ```yaml
-# config/spk_config.yaml - Can be updated by self-play
+# config/planner_config.yaml - Can be updated by self-play
 cost_weights:
   loc_weight: 1.5        # ← Learned from data
   dependency_weight: 3.0  # ← Optimized via self-play
@@ -366,7 +366,7 @@ class AureusSelfPlay:
 
 **Typical Self-Play Modifications**:
 
-1. **Cost Model Weights** (`src/governance/spk.py`)
+1. **Cost Model Weights** (`src/governance/planner.py`)
    ```python
    # Before self-play
    self.loc_weight = 1.0
@@ -396,7 +396,7 @@ class AureusSelfPlay:
        return self.learned_policy.decompose(spec)
    ```
 
-4. **Threshold Derivation** (`src/governance/gvufd.py`)
+4. **Threshold Derivation** (`src/governance/intent_parser.py`)
    ```python
    # Learned utility function replaces hardcoded thresholds
    def derive_thresholds(self, context: Context) -> Thresholds:
@@ -412,7 +412,7 @@ class AureusSelfPlay:
 |-----------|----------|----------------------|---------------------|
 | **Agent Code** | `/aureus/src/` | ✅ Yes | Aureus's own policy + tests |
 | **Agent Tests** | `/aureus/tests/` | ✅ Yes | Must pass before commit |
-| **Cost Models** | `/aureus/src/governance/spk.py` | ✅ Yes | Validation against holdout data |
+| **Cost Models** | `/aureus/src/governance/planner.py` | ✅ Yes | Validation against holdout data |
 | **Learned Patterns** | `/aureus/src/memory/patterns.py` | ✅ Yes | Validation against success metrics |
 | **Config/Hyperparams** | `/aureus/config/*.yaml` | ✅ Yes | Bounded optimization (can't set to 0/infinity) |
 | **Core Principles** | `/aureus/src/governance/principles.py` | ❌ No | Hardcoded immutable constants |

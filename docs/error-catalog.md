@@ -91,7 +91,7 @@ class BudgetExceededError(AUREUSError):
                 "  • Break into smaller tasks\n"
                 "  • Remove unused code first\n"
                 "  • Increase budget: aureus policy edit\n"
-                "  • See alternatives suggested by SPK"
+                "  • See alternatives suggested by Planner"
             )
         )
 ```
@@ -164,7 +164,7 @@ class CostThresholdExceededError(AUREUSError):
                 }
             },
             suggestion=(
-                f"SPK suggests {len(alternatives)} simpler alternatives:\n" +
+                f"Planner suggests {len(alternatives)} simpler alternatives:\n" +
                 "\n".join(f"  {i+1}. {alt.description}" for i, alt in enumerate(alternatives[:3]))
             )
         )
@@ -246,7 +246,7 @@ class ForbiddenPatternError(AUREUSError):
 
 ```python
 class SpecificationGenerationError(AUREUSError):
-    """GVUFD failed to generate valid spec."""
+    """IntentParser failed to generate valid spec."""
     
     def __init__(self, intent: str, attempts: int):
         super().__init__(
@@ -753,7 +753,7 @@ Details:
     - dependency_cost: 255
     - abstraction_cost: 255
 
-💡 Suggestion: SPK suggests 3 simpler alternatives:
+💡 Suggestion: Planner suggests 3 simpler alternatives:
   1. Reduce scope to core functionality (cost: 300)
   2. Split into 2 phases (cost: 250 per phase)
   3. Use existing library instead of custom implementation (cost: 150)

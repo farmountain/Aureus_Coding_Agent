@@ -1,17 +1,17 @@
 """
-Builder Agent - Tier 3 (UVUAS) for AUREUS Phase 1
+Builder Agent - Tier 3 (Generator) for AUREUS Phase 1
 
 Unified agent that integrates:
-- GVUFD (Tier 1): Specification generation
-- SPK (Tier 2): Cost pricing and budget enforcement  
+- IntentParser (Tier 1): Specification generation
+- Planner (Tier 2): Cost pricing and budget enforcement  
 - Tool Bus: Permission-gated tool execution
 
 Phase 1: Single unified agent (plan + build + test)
 Phase 2: Multi-agent swarm (Planner, Builder, Tester, Critic, Reflexion)
 
 The Builder Agent orchestrates the complete coding workflow:
-1. Generate specification from intent (GVUFD)
-2. Check budget and get cost (SPK)
+1. Generate specification from intent (IntentParser)
+2. Check budget and get cost (Planner)
 3. Execute implementation using tools
 4. Validate against success criteria
 """
@@ -20,8 +20,8 @@ from typing import Dict, Any, List, Optional, Tuple
 from pathlib import Path
 from dataclasses import dataclass, field
 from src.interfaces import Policy, Specification, Cost
-from src.governance.gvufd import SpecificationGenerator
-from src.governance.spk import PricingKernel
+from src.governance.intent_parser import SpecificationGenerator
+from src.governance.planner import PricingKernel
 from src.toolbus import FileReadTool, FileWriteTool, GrepSearchTool, PermissionChecker
 from src.model_provider import ModelProvider, MockProvider
 from src.agents.file_placement import FilePlacementEngine
@@ -56,11 +56,11 @@ class BuildResult:
 
 class BuilderAgent:
     """
-    Unified Builder Agent (Phase 1 UVUAS)
+    Unified Builder Agent (Phase 1 Generator)
     
     Orchestrates complete coding workflow:
-    1. GVUFD: Intent → Specification
-    2. SPK: Specification → Cost (with budget check)
+    1. IntentParser: Intent → Specification
+    2. Planner: Specification → Cost (with budget check)
     3. Execute: Use tools to implement
     4. Validate: Check against success criteria
     """
@@ -122,7 +122,7 @@ class BuilderAgent:
         # Initialize file placement intelligence
         self.file_placement = FilePlacementEngine(self.project_root)
         
-        # Initialize 3-tier coordinator (GVUFD → SPK → UVUAS)
+        # Initialize 3-tier coordinator (IntentParser → Planner → Generator)
         self.coordinator = ThreeTierCoordinator(
             policy=self.policy,
             global_value_memory=self.global_value_memory,
@@ -147,12 +147,12 @@ class BuilderAgent:
     
     def _coordinated_build(self, intent: str) -> BuildResult:
         """
-        Execute build using 3-tier coordination (GVUFD → SPK → UVUAS).
+        Execute build using 3-tier coordination (IntentParser → Planner → Generator).
         
         This ensures tight integration:
-        - GVUFD extracts goals from intent → updates global value function
-        - SPK generates spec variants → selects by value alignment
-        - UVUAS executes with Claude Code loop (Context → Execute → Reflect)
+        - IntentParser extracts goals from intent → updates global value function
+        - Planner generates spec variants → selects by value alignment
+        - Generator executes with Claude Code loop (Context → Execute → Reflect)
         """
         try:
             # Execute coordinated flow
@@ -262,11 +262,11 @@ class BuilderAgent:
             BuildResult with success status
         """
         try:
-            # Step 1: GVUFD - Generate specification
+            # Step 1: IntentParser - Generate specification
             self._log("Generating specification from intent", intent=intent)
             spec = self.spec_generator.generate(intent, self.policy)
             
-            # Step 2: SPK - Price and check budget
+            # Step 2: Planner - Price and check budget
             self._log("Calculating cost and checking budget")
             cost = self.pricing_kernel.price(spec, self.policy)
             
@@ -396,17 +396,17 @@ class BuilderAgent:
         """
         Execute implementation using tools
         
-        Integrates GVUFD→SPK→UVUAS pipeline:
-        - GVUFD provides specification with intent and success criteria
-        - SPK has validated budget and provided cost breakdown
-        - UVUAS (this method) generates code within constraints
+        Integrates IntentParser→Planner→Generator pipeline:
+        - IntentParser provides specification with intent and success criteria
+        - Planner has validated budget and provided cost breakdown
+        - Generator (this method) generates code within constraints
         
         Uses the configured model provider (OpenAI, Anthropic, or Mock) to
         generate actual code based on the specification.
         
         Args:
-            spec: Specification from GVUFD
-            cost: Cost from SPK
+            spec: Specification from IntentParser
+            cost: Cost from Planner
             previous_error: Error from previous attempt (for refinement)
             attempt: Current attempt number
         
@@ -429,7 +429,7 @@ class BuilderAgent:
         
         # Generate actual implementation using model provider
         try:
-            # Create comprehensive prompt with GVUFD spec and SPK cost breakdown
+            # Create comprehensive prompt with IntentParser spec and Planner cost breakdown
             prompt = f"""Generate Python code for the following specification:
 
 Intent: {spec.intent}
@@ -437,7 +437,7 @@ Intent: {spec.intent}
 Success Criteria:
 {chr(10).join(f"- {criterion}" for criterion in spec.success_criteria)}
 
-Budget Constraints (SPK-validated):
+Budget Constraints (Planner-validated):
 - Max LOC: {spec.budgets.max_loc_delta} (Cost: {cost.loc})
 - Max new files: {spec.budgets.max_new_files}
 - Max dependencies: {spec.budgets.max_new_dependencies} (Cost: {cost.dependencies})

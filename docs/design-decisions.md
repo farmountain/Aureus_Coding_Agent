@@ -50,7 +50,7 @@
 |--------|--------|---------------|
 | CLI | 400 LOC | Argument parsing + output formatting (simple, focused) |
 | Harness | 600 LOC | Orchestration loop + session management (moderate complexity) |
-| Governance | 1000 LOC | GVUFD + SPK are most complex (intelligence layer) |
+| Governance | 1000 LOC | IntentParser + Planner are most complex (intelligence layer) |
 | Agents | 600 LOC | Single builder agent in Phase 1 (not 5 agents) |
 | ToolBus | 700 LOC | 4-5 core tools + dispatcher (simplified Phase 1) |
 | Memory | 300 LOC | policy.yaml + history.jsonl only (deferred ADRs to Phase 2) |
@@ -185,7 +185,7 @@ def update_weights(self, action: Action, outcome: Outcome):
 **Justification**:
 - **Alignment**: 100 calls × 30 sec avg = 50 min (under 1 hour timeout)
 - **Workflow Breakdown**:
-  - Planning: ~5 calls (GVUFD spec generation)
+  - Planning: ~5 calls (IntentParser spec generation)
   - Implementation: ~30 calls (Builder writing code)
   - Testing: ~20 calls (Tester verifying)
   - Refinement: ~45 calls (3 iterations × 15 calls each)
@@ -253,7 +253,7 @@ cost_limits:
 
 ### 4.2 Specification Attempts: 3 Maximum
 
-**Decision**: GVUFD tries at most 3 times to generate valid spec
+**Decision**: IntentParser tries at most 3 times to generate valid spec
 
 **Justification**:
 - **User Intent Quality**: If 3 attempts fail, intent is too ambiguous
@@ -264,7 +264,7 @@ cost_limits:
 
 ### 4.3 Alternative Suggestions: 3 Maximum
 
-**Decision**: SPK suggests at most 3 alternatives when over budget
+**Decision**: Planner suggests at most 3 alternatives when over budget
 
 **Justification**:
 - **Choice Paralysis**: > 3 options overwhelms users

@@ -200,7 +200,7 @@ class TestPolicy:
 
 
 class TestSpecification:
-    """Test Specification data model (GVUFD output)."""
+    """Test Specification data model (IntentParser output)."""
     
     def test_specification_creation(self):
         """Specification should be created with required fields."""

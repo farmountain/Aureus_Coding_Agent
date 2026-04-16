@@ -33,7 +33,7 @@ AUREUS development follows its own governance principles:
 - Forbidden pattern definitions (simple rules)
 - Permission matrix (tool allow/deny)
 
-#### 1.3 Tier 1: GVUFD (Simplified)
+#### 1.3 Tier 1: IntentParser (Simplified)
 - Intent → Specification converter
 - Success criteria generation
 - Budget allocation

@@ -39,7 +39,7 @@ def should_approve(cost: Cost) -> Decision:
 ### Phase 2: Self-Governance via Utility Function
 
 ```python
-class GVUFD:
+class IntentParser:
     def derive_thresholds(self, context: Context) -> Thresholds:
         """
         Instead of hardcoding, derive thresholds from utility function.
@@ -99,7 +99,7 @@ context = Context(
     policy=user_policy
 )
 
-thresholds = gvufd.derive_thresholds(context)
+thresholds = intent_parser.derive_thresholds(context)
 # Result:
 # - auto_proceed: 250 LOC (12.5% of project)
 # - prompt: 600 LOC (30% of project)
@@ -116,7 +116,7 @@ context = Context(
     policy=user_policy
 )
 
-thresholds = gvufd.derive_thresholds(context)
+thresholds = intent_parser.derive_thresholds(context)
 # Result:
 # - auto_proceed: 800 LOC (1.6% of project)
 # - prompt: 2000 LOC (4% of project)
@@ -312,15 +312,15 @@ def derive_hard_limit(self, context: Context) -> float:
 ```
 User Intent (global goal)
     ↓
-[GVUFD: Global → Local Translation]
+[IntentParser: Global → Local Translation]
     ↓
 Specification (local constraints)
     ↓
-[SPK: Local → Cost Translation]
+[Planner: Local → Cost Translation]
     ↓
 Priced Actions (local operations with global cost)
     ↓
-[UVUAS: Execute with Local Correctness]
+[Generator: Execute with Local Correctness]
     ↓
 Implementation (locally correct code)
     ↓
@@ -336,7 +336,7 @@ Global Utility Realized
 "Add user authentication"
 ```
 
-**GVUFD Translation** (global → local):
+**IntentParser Translation** (global → local):
 ```python
 Specification(
     success_criteria=[
@@ -358,7 +358,7 @@ Specification(
 )
 ```
 
-**SPK Translation** (local → cost):
+**Planner Translation** (local → cost):
 ```python
 # Each local action gets global cost
 actions = [
@@ -374,7 +374,7 @@ if total_cost < thresholds.auto_proceed:
     return Decision.approved()
 ```
 
-**UVUAS Execution** (local correctness):
+**Generator Execution** (local correctness):
 ```python
 # Builder ensures local correctness
 def create_auth_module():
@@ -410,16 +410,16 @@ def unified_optimization(intent: str, context: Context) -> Change:
     Optimize for global utility while ensuring local correctness.
     """
     
-    # 1. GVUFD: Translate global intent → local constraints
-    spec = gvufd.generate_specification(intent, context)
+    # 1. IntentParser: Translate global intent → local constraints
+    spec = intent_parser.generate_specification(intent, context)
     
-    # 2. SPK: Ensure local changes have acceptable global cost
-    if not spk.within_budget(spec, context):
-        alternatives = spk.generate_alternatives(spec, context)
+    # 2. Planner: Ensure local changes have acceptable global cost
+    if not planner.within_budget(spec, context):
+        alternatives = planner.generate_alternatives(spec, context)
         spec = user.choose(alternatives)
     
-    # 3. UVUAS: Execute with local correctness guarantees
-    change = uvuas.implement(spec, context)
+    # 3. Generator: Execute with local correctness guarantees
+    change = generator.implement(spec, context)
     
     # Verify: Local correctness
     assert change.passes_tests()
@@ -454,7 +454,7 @@ REJECT = 2000
 
 ```python
 # Thresholds adapt to project context
-thresholds = gvufd.derive_thresholds(context)
+thresholds = intent_parser.derive_thresholds(context)
 # Different for each project!
 ```
 
@@ -511,7 +511,7 @@ for iteration in range(1000):
 ```python
 # When developing AUREUS feature:
 def add_feature_to_aureus(feature: str):
-    # GVUFD analyzes AUREUS's own codebase
+    # IntentParser analyzes AUREUS's own codebase
     aureus_context = Context(
         project_path="/aureus/src",
         current_loc=5000,
@@ -519,21 +519,21 @@ def add_feature_to_aureus(feature: str):
     )
     
     # Derive thresholds for AUREUS development
-    thresholds = gvufd.derive_thresholds(aureus_context)
+    thresholds = intent_parser.derive_thresholds(aureus_context)
     
-    # SPK prices the change to AUREUS
-    spec = gvufd.generate_specification(feature, aureus_context)
-    cost = spk.calculate_cost(spec, aureus_context)
+    # Planner prices the change to AUREUS
+    spec = intent_parser.generate_specification(feature, aureus_context)
+    cost = planner.calculate_cost(spec, aureus_context)
     
     # Should AUREUS approve this change to itself?
     if cost < thresholds.auto_proceed:
-        uvuas.implement(spec, aureus_context)
+        generator.implement(spec, aureus_context)
     elif cost < thresholds.prompt:
         if developer.approves(spec, cost):
-            uvuas.implement(spec, aureus_context)
+            generator.implement(spec, aureus_context)
     else:
         print(f"Feature '{feature}' would violate AUREUS's own governance!")
-        alternatives = spk.generate_alternatives(spec, aureus_context)
+        alternatives = planner.generate_alternatives(spec, aureus_context)
         print(f"Alternatives: {alternatives}")
 ```
 
@@ -600,7 +600,7 @@ The 3-tier system **should** derive its own thresholds from the utility function
 AUTO_PROCEED = 300  # hardcoded
 
 # Use:
-AUTO_PROCEED = gvufd.derive_threshold(
+AUTO_PROCEED = intent_parser.derive_threshold(
     condition="expected_utility > 0 AND variance < risk_tolerance",
     context=current_context
 )  # dynamically derived
@@ -616,9 +616,9 @@ AUTO_PROCEED = gvufd.derive_threshold(
 **Answer**: **Yes, they're unified through 3-tier translation:**
 
 ```
-Global Intent → [GVUFD] → Local Constraints
-Local Constraints → [SPK] → Global Cost
-Local Implementation → [UVUAS] → Verified Against Global Utility
+Global Intent → [IntentParser] → Local Constraints
+Local Constraints → [Planner] → Global Cost
+Local Implementation → [Generator] → Verified Against Global Utility
 ```
 
 **Local correctness is necessary; global utility is sufficient.**

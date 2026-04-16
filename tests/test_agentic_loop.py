@@ -38,12 +38,12 @@ def test_policy(tmp_path):
 
 
 @pytest.fixture
-def mock_gvufd():
-    """Mock GVUFD generator"""
+def mock_intent_parser():
+    """Mock IntentParser generator"""
     from src.interfaces import SpecificationBudget
     
-    gvufd = Mock()
-    gvufd.generate_spec.return_value = Specification(
+    intent_parser = Mock()
+    intent_parser.generate_spec.return_value = Specification(
         intent="Add hello function",
         success_criteria=["Function returns 'Hello'"],
         budgets=SpecificationBudget(
@@ -55,45 +55,45 @@ def mock_gvufd():
         risk_level="low",
         acceptance_tests=["test_hello_returns_hello"]
     )
-    return gvufd
+    return intent_parser
 
 
 @pytest.fixture
-def mock_spk():
-    """Mock SPK pricing kernel"""
-    spk = Mock()
-    spk.price_changes.return_value = Mock(
+def mock_planner():
+    """Mock Planner pricing kernel"""
+    planner = Mock()
+    planner.price_changes.return_value = Mock(
         within_budget=True,
         total_cost=50.0,
         breakdown={"loc": 30.0, "complexity": 20.0}
     )
-    return spk
+    return planner
 
 
 class TestAgenticLoop:
     """Test AgenticLoop orchestration"""
     
-    def test_loop_initialization(self, test_policy, mock_gvufd, mock_spk):
+    def test_loop_initialization(self, test_policy, mock_intent_parser, mock_planner):
         """Test creating agentic loop"""
         loop = AgenticLoop(
             policy=test_policy,
-            gvufd=mock_gvufd,
-            spk=mock_spk,
+            intent_parser=mock_intent_parser,
+            planner=mock_planner,
             interactive_mode=False
         )
         
         assert loop.policy == test_policy
-        assert loop.gvufd == mock_gvufd
-        assert loop.spk == mock_spk
+        assert loop.intent_parser == mock_intent_parser
+        assert loop.planner == mock_planner
         assert loop.interactive_mode is False
         assert loop.current_phase is None
     
-    def test_gather_phase(self, test_policy, mock_gvufd, mock_spk):
+    def test_gather_phase(self, test_policy, mock_intent_parser, mock_planner):
         """Test gather context phase"""
         loop = AgenticLoop(
             policy=test_policy,
-            gvufd=mock_gvufd,
-            spk=mock_spk
+            intent_parser=mock_intent_parser,
+            planner=mock_planner
         )
         
         result = loop.gather_context("Add hello function")
@@ -103,15 +103,15 @@ class TestAgenticLoop:
         assert result.specification is not None
         assert loop.current_phase == LoopPhase.GATHER
         
-        # GVUFD should have been called
-        mock_gvufd.generate_spec.assert_called_once()
+        # IntentParser should have been called
+        mock_intent_parser.generate_spec.assert_called_once()
     
-    def test_act_phase_requires_gather(self, test_policy, mock_gvufd, mock_spk):
+    def test_act_phase_requires_gather(self, test_policy, mock_intent_parser, mock_planner):
         """Test act phase requires gather first"""
         loop = AgenticLoop(
             policy=test_policy,
-            gvufd=mock_gvufd,
-            spk=mock_spk
+            intent_parser=mock_intent_parser,
+            planner=mock_planner
         )
         
         # Try to act without gathering
@@ -120,12 +120,12 @@ class TestAgenticLoop:
         assert result.success is False
         assert "must gather context first" in result.error.lower()
     
-    def test_act_phase_with_budget_check(self, test_policy, mock_gvufd, mock_spk):
-        """Test act phase enforces SPK budget"""
+    def test_act_phase_with_budget_check(self, test_policy, mock_intent_parser, mock_planner):
+        """Test act phase enforces Planner budget"""
         loop = AgenticLoop(
             policy=test_policy,
-            gvufd=mock_gvufd,
-            spk=mock_spk
+            intent_parser=mock_intent_parser,
+            planner=mock_planner
         )
         
         # Gather first
@@ -138,13 +138,13 @@ class TestAgenticLoop:
         assert result.phase == LoopPhase.ACT
         assert loop.current_phase == LoopPhase.ACT
         
-        # SPK should have been called
-        mock_spk.price_changes.assert_called()
+        # Planner should have been called
+        mock_planner.price_changes.assert_called()
     
-    def test_act_phase_fails_when_over_budget(self, test_policy, mock_gvufd, mock_spk):
+    def test_act_phase_fails_when_over_budget(self, test_policy, mock_intent_parser, mock_planner):
         """Test act phase rejects over-budget changes"""
-        # Make SPK reject changes
-        mock_spk.price_changes.return_value = Mock(
+        # Make Planner reject changes
+        mock_planner.price_changes.return_value = Mock(
             within_budget=False,
             total_cost=5000.0,
             breakdown={"loc": 5000.0}
@@ -152,8 +152,8 @@ class TestAgenticLoop:
         
         loop = AgenticLoop(
             policy=test_policy,
-            gvufd=mock_gvufd,
-            spk=mock_spk
+            intent_parser=mock_intent_parser,
+            planner=mock_planner
         )
         
         # Gather and try to act
@@ -163,12 +163,12 @@ class TestAgenticLoop:
         assert result.success is False
         assert "budget" in result.error.lower()
     
-    def test_verify_phase(self, test_policy, mock_gvufd, mock_spk):
+    def test_verify_phase(self, test_policy, mock_intent_parser, mock_planner):
         """Test verify phase"""
         loop = AgenticLoop(
             policy=test_policy,
-            gvufd=mock_gvufd,
-            spk=mock_spk
+            intent_parser=mock_intent_parser,
+            planner=mock_planner
         )
         
         # Gather and act first
@@ -182,12 +182,12 @@ class TestAgenticLoop:
         assert result.phase == LoopPhase.VERIFY
         assert loop.current_phase == LoopPhase.VERIFY
     
-    def test_full_loop_execution(self, test_policy, mock_gvufd, mock_spk):
+    def test_full_loop_execution(self, test_policy, mock_intent_parser, mock_planner):
         """Test complete loop: gather → act → verify"""
         loop = AgenticLoop(
             policy=test_policy,
-            gvufd=mock_gvufd,
-            spk=mock_spk
+            intent_parser=mock_intent_parser,
+            planner=mock_planner
         )
         
         # Execute full loop
@@ -208,12 +208,12 @@ class TestAgenticLoop:
         # Loop should be complete
         assert loop.is_complete()
     
-    def test_loop_reset(self, test_policy, mock_gvufd, mock_spk):
+    def test_loop_reset(self, test_policy, mock_intent_parser, mock_planner):
         """Test resetting loop state"""
         loop = AgenticLoop(
             policy=test_policy,
-            gvufd=mock_gvufd,
-            spk=mock_spk
+            intent_parser=mock_intent_parser,
+            planner=mock_planner
         )
         
         # Execute partial loop
@@ -226,19 +226,19 @@ class TestAgenticLoop:
         assert loop.current_phase is None
         assert not loop.is_complete()
     
-    def test_interactive_mode_flag(self, test_policy, mock_gvufd, mock_spk):
+    def test_interactive_mode_flag(self, test_policy, mock_intent_parser, mock_planner):
         """Test interactive mode is respected"""
         loop_interactive = AgenticLoop(
             policy=test_policy,
-            gvufd=mock_gvufd,
-            spk=mock_spk,
+            intent_parser=mock_intent_parser,
+            planner=mock_planner,
             interactive_mode=True
         )
         
         loop_non_interactive = AgenticLoop(
             policy=test_policy,
-            gvufd=mock_gvufd,
-            spk=mock_spk,
+            intent_parser=mock_intent_parser,
+            planner=mock_planner,
             interactive_mode=False
         )
         

@@ -1,6 +1,6 @@
 """
 REAL End-to-End Integration Test
-Tests complete GVUFD → SPK → UVUAS pipeline with actual file creation
+Tests complete IntentParser → Planner → Generator pipeline with actual file creation
 """
 import pytest
 from pathlib import Path
@@ -55,8 +55,8 @@ class TestRealE2EIntegration:
         for filepath in result.files_created:
             assert "workspace" in filepath, f"File not in workspace: {filepath}"
     
-    def test_gvufd_spk_integration(self):
-        """Test: GVUFD spec → SPK cost (schema compatibility)"""
+    def test_intent_parser_planner_integration(self):
+        """Test: IntentParser spec → Planner cost (schema compatibility)"""
         policy_path = Path(".aureus/policy.yaml")
         loader = PolicyLoader()
         policy = loader.load(policy_path)
@@ -77,8 +77,8 @@ class TestRealE2EIntegration:
         assert result.cost.within_budget in [True, False]
         assert result.cost.budget_status in ['approved', 'advisory', 'warning', 'rejected']
     
-    def test_spk_uvuas_integration(self):
-        """Test: SPK cost → UVUAS implementation (budget enforcement)"""
+    def test_planner_generator_integration(self):
+        """Test: Planner cost → Generator implementation (budget enforcement)"""
         policy_path = Path(".aureus/policy.yaml")
         loader = PolicyLoader()
         policy = loader.load(policy_path)
@@ -146,9 +146,9 @@ class TestSchemaValidation:
     """Validate that component interfaces match"""
     
     def test_specification_to_cost_schema(self):
-        """Verify Specification fields match what SPK expects"""
+        """Verify Specification fields match what Planner expects"""
         from src.interfaces import Specification, SpecificationBudget
-        from src.governance.spk import PricingKernel
+        from src.governance.planner import PricingKernel
         from src.governance.policy import PolicyLoader
         
         # Create minimal valid spec
@@ -169,7 +169,7 @@ class TestSchemaValidation:
         loader = PolicyLoader()
         policy = loader.load(policy_path)
         
-        # VERIFY: SPK can price the specification without errors
+        # VERIFY: Planner can price the specification without errors
         kernel = PricingKernel()
         cost = kernel.price(spec, policy)
         

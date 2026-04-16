@@ -1,7 +1,7 @@
 """
-Tests for SPK (Self-Pricing Kernel) - Tier 2
+Tests for Planner (Planner) - Tier 2
 
-SPK is the cost optimizer in the 3-tier semantic compiler.
+Planner is the cost optimizer in the 3-tier semantic compiler.
 It calculates complexity costs, enforces budgets, and generates alternatives.
 
 Test Coverage:
@@ -19,7 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.interfaces import Specification, Cost, Budget, Policy, SpecificationBudget
-from src.governance.spk import (
+from src.governance.planner import (
     LinearCostModel,
     BudgetEnforcer,
     AlternativeGenerator,
@@ -327,7 +327,7 @@ class TestAlternativeGenerator:
 
 
 class TestPricingKernel:
-    """Test the complete SPK pricing kernel"""
+    """Test the complete Planner pricing kernel"""
 
     def test_price_specification(self):
         """Test end-to-end specification pricing"""

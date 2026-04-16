@@ -2,15 +2,15 @@
 Three-Tier Coordination Protocol
 
 Coordinates the tight integration between:
-1. GVUFD (Semantic Compiler): Intent → Goals + Spec
-2. SPK (Self-Pricing Kernel): Spec Candidates → Value-Aligned Selection
-3. UVUAS (Agent Swarm): Execution with Claude Code Loop (Context → Execute → Reflect)
+1. IntentParser (Semantic Compiler): Intent → Goals + Spec
+2. Planner (Planner): Spec Candidates → Value-Aligned Selection
+3. Generator (Agent Swarm): Execution with Claude Code Loop (Context → Execute → Reflect)
 
 This is NOT a pipeline - it's a coordinated system where each tier informs the others:
-- GVUFD extracts goals from intent and updates global value function
-- SPK evaluates specs based on value alignment (not just cost)
-- UVUAS executes with continuous alignment checking and reflection
-- Feedback from UVUAS can trigger GVUFD re-specification or SPK re-evaluation
+- IntentParser extracts goals from intent and updates global value function
+- Planner evaluates specs based on value alignment (not just cost)
+- Generator executes with continuous alignment checking and reflection
+- Feedback from Generator can trigger IntentParser re-specification or Planner re-evaluation
 """
 
 from dataclasses import dataclass
@@ -19,8 +19,8 @@ from pathlib import Path
 import re
 
 from src.interfaces import Policy, Specification, Cost, AcceptanceTest, SpecificationBudget
-from src.governance.gvufd import SpecificationGenerator
-from src.governance.spk import PricingKernel
+from src.governance.intent_parser import SpecificationGenerator
+from src.governance.planner import PricingKernel
 from src.memory.global_value_function import GlobalValueMemory, GoalType
 
 
@@ -37,7 +37,7 @@ class IntentGoalExtractor:
     """
     Extracts goals and constraints from natural language intent.
     
-    This is what makes GVUFD "semantic" - it maps natural language to formal goals.
+    This is what makes IntentParser "semantic" - it maps natural language to formal goals.
     """
     
     # Keywords that signal goal priorities
@@ -112,7 +112,7 @@ class SpecEvaluator:
     """
     Evaluates specification candidates using global value function.
     
-    This is what makes SPK "value-aware" - it selects based on alignment, not just cost.
+    This is what makes Planner "value-aware" - it selects based on alignment, not just cost.
     """
     
     def __init__(self, global_value_memory: GlobalValueMemory):
@@ -183,7 +183,7 @@ class ClaudeCodeLoop:
     """
     Implements Context → Execute → Reflect pattern for agent execution.
     
-    This is what makes UVUAS "reflective" - continuous alignment checking.
+    This is what makes Generator "reflective" - continuous alignment checking.
     """
     
     def __init__(self, global_value_memory: GlobalValueMemory, workspace_root: Path):
@@ -293,14 +293,14 @@ class ClaudeCodeLoop:
 
 class ThreeTierCoordinator:
     """
-    Coordinates the complete flow: GVUFD → SPK → UVUAS with tight integration.
+    Coordinates the complete flow: IntentParser → Planner → Generator with tight integration.
     
     Flow:
     1. Intent arrives
-    2. GVUFD: Extract goals → Update global value function → Generate spec
-    3. SPK: Generate spec variants → Evaluate by value alignment → Select best
-    4. UVUAS: Context → Execute → Reflect (with alignment checking at each step)
-    5. Feedback: If misaligned, loop back to GVUFD for re-specification
+    2. IntentParser: Extract goals → Update global value function → Generate spec
+    3. Planner: Generate spec variants → Evaluate by value alignment → Select best
+    4. Generator: Context → Execute → Reflect (with alignment checking at each step)
+    5. Feedback: If misaligned, loop back to IntentParser for re-specification
     """
     
     def __init__(
@@ -322,7 +322,7 @@ class ThreeTierCoordinator:
         
         # Register coordinator with global value function
         self.global_value_memory.register_agent(
-            agent_id="uvuas_coordinator",
+            agent_id="generator_coordinator",
             agent_role="coordination",
             local_goals=["coordination", "alignment", "integration"]
         )
@@ -347,10 +347,10 @@ class ThreeTierCoordinator:
         }
         
         # ====================================================================
-        # TIER 1: GVUFD - Intent → Goals + Spec
+        # TIER 1: IntentParser - Intent → Goals + Spec
         # ====================================================================
         
-        self._log(result, "TIER 1: GVUFD - Extracting goals from intent")
+        self._log(result, "TIER 1: IntentParser - Extracting goals from intent")
         
         # Extract goals from intent
         intent_goals = self.intent_extractor.extract(intent)
@@ -375,10 +375,10 @@ class ThreeTierCoordinator:
         result["spec"] = base_spec
         
         # ====================================================================
-        # TIER 2: SPK - Spec Variants → Value-Aligned Selection
+        # TIER 2: Planner - Spec Variants → Value-Aligned Selection
         # ====================================================================
         
-        self._log(result, "TIER 2: SPK - Evaluating specification candidates")
+        self._log(result, "TIER 2: Planner - Evaluating specification candidates")
         
         # Generate spec variants (base + alternatives)
         spec_candidates = []
@@ -420,10 +420,10 @@ class ThreeTierCoordinator:
         self._log(result, f"Selected spec with alignment score: {alignment_score:.2f}")
         
         # ====================================================================
-        # TIER 3: UVUAS - Claude Code Loop (Context → Execute → Reflect)
+        # TIER 3: Generator - Claude Code Loop (Context → Execute → Reflect)
         # ====================================================================
         
-        self._log(result, "TIER 3: UVUAS - Executing with Claude Code loop")
+        self._log(result, "TIER 3: Generator - Executing with Claude Code loop")
         
         # Phase 1: Gather context
         context = self.claude_loop.gather_context(intent, selected_spec)
@@ -437,7 +437,7 @@ class ThreeTierCoordinator:
         }
         
         execution_result, aligned, warnings = self.claude_loop.execute_with_alignment(
-            agent_id="uvuas_coordinator",
+            agent_id="generator_coordinator",
             task=task,
             context=context
         )

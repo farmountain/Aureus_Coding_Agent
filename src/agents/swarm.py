@@ -1,5 +1,5 @@
 """
-UVUAS Agent Swarm Architecture
+Generator Agent Swarm Architecture
 
 Unified goal-driven agent swarm for code generation.
 Multiple specialized agents coordinate to build high-quality code.

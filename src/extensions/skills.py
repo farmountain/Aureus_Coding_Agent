@@ -4,7 +4,7 @@ Skill Extension
 Reusable workflow system with governance.
 
 Skills are like functions but with:
-- Cost budgets (SPK enforcement)
+- Cost budgets (Planner enforcement)
 - Permission requirements
 - Validation rules
 """

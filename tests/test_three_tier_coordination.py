@@ -1,10 +1,10 @@
 """
 Test 3-Tier Coordination Protocol
 
-Demonstrates how GVUFD -> SPK -> UVUAS coordinate tightly:
-1. GVUFD: Extracts goals from intent, updates global value function
-2. SPK: Evaluates spec candidates by value alignment (not just cost)
-3. UVUAS: Executes with Claude Code loop (Context -> Execute -> Reflect)
+Demonstrates how IntentParser -> Planner -> Generator coordinate tightly:
+1. IntentParser: Extracts goals from intent, updates global value function
+2. Planner: Evaluates spec candidates by value alignment (not just cost)
+3. Generator: Executes with Claude Code loop (Context -> Execute -> Reflect)
 
 This is the core architecture that makes AUREUS intelligent.
 """
@@ -46,7 +46,7 @@ def test_simple_intent():
     # Execute coordination
     result = coordinator.coordinate(intent)
     
-    print("\nAfter coordination (GVUFD extracted goals):")
+    print("\nAfter coordination (IntentParser extracted goals):")
     vf = global_value_memory.get_global_value_function()
     for goal in vf.goals:
         print(f"  {goal.goal_type.value}: {goal.weight}")
@@ -67,8 +67,8 @@ def test_simple_intent():
     assert "simplicity" in goals.explicit_goals, "Should extract simplicity goal"
     assert goals.optimization_target == "maximize_speed", "Simple -> speed optimization"
     
-    print("\n[OK] GVUFD correctly extracted goals from 'simple' keyword")
-    print("[OK] SPK selected spec with highest value alignment")
+    print("\n[OK] IntentParser correctly extracted goals from 'simple' keyword")
+    print("[OK] Planner selected spec with highest value alignment")
 
 def test_production_intent():
     """Test: 'production-ready' should increase quality + testability"""
@@ -103,11 +103,11 @@ def test_production_intent():
     assert "high_quality" in goals.explicit_goals, "Should extract quality goal"
     assert goals.optimization_target == "maximize_quality", "Production -> quality optimization"
     
-    print("\n[OK] GVUFD correctly prioritized quality for production intent")
+    print("\n[OK] IntentParser correctly prioritized quality for production intent")
 
 def test_spec_evaluation():
-    """Test: SPK evaluates specs by value alignment, not just cost"""
-    print_section("Test 3: SPK Value-Based Spec Selection")
+    """Test: Planner evaluates specs by value alignment, not just cost"""
+    print_section("Test 3: Planner Value-Based Spec Selection")
     
     policy = PolicyLoader().load(Path('.aureus/policy.yaml'))
     global_value_memory = GlobalValueMemory()
@@ -125,7 +125,7 @@ def test_spec_evaluation():
     print(f"\nIntent: '{intent}'")
     print(f"\nSpec candidates evaluated:")
     
-    # Show how SPK evaluated each candidate
+    # Show how Planner evaluated each candidate
     for i, (spec, cost) in enumerate(result['spec_candidates'], 1):
         # Calculate value score for each
         from src.coordination.three_tier_coordinator import SpecEvaluator
@@ -142,7 +142,7 @@ def test_spec_evaluation():
     print(f"  Alignment score: {result['alignment_score']:.2f}")
     print(f"  Intent: {result['selected_spec'].intent}")
     
-    print("\n[OK] SPK selected based on value alignment, not just lowest cost")
+    print("\n[OK] Planner selected based on value alignment, not just lowest cost")
 
 def test_coordination_log():
     """Test: Coordination log shows complete flow"""
@@ -168,9 +168,9 @@ def test_coordination_log():
     # Verify flow
     log_text = " ".join(result['coordination_log'])
     
-    assert "TIER 1: GVUFD" in log_text, "Should show GVUFD execution"
-    assert "TIER 2: SPK" in log_text, "Should show SPK execution"  
-    assert "TIER 3: UVUAS" in log_text, "Should show UVUAS execution"
+    assert "TIER 1: IntentParser" in log_text, "Should show IntentParser execution"
+    assert "TIER 2: Planner" in log_text, "Should show Planner execution"  
+    assert "TIER 3: Generator" in log_text, "Should show Generator execution"
     assert "Context:" in log_text, "Should show context gathering"
     
     print("\n[OK] Complete 3-tier flow executed in order")
@@ -216,9 +216,9 @@ def main():
 ================================================================================
 
 This demonstrates the tight integration between:
-- GVUFD (Tier 1): Intent -> Goals + Spec
-- SPK (Tier 2): Spec Variants -> Value-Aligned Selection  
-- UVUAS (Tier 3): Claude Code Loop (Context -> Execute -> Reflect)
+- IntentParser (Tier 1): Intent -> Goals + Spec
+- Planner (Tier 2): Spec Variants -> Value-Aligned Selection  
+- Generator (Tier 3): Claude Code Loop (Context -> Execute -> Reflect)
 
 These are NOT independent components - they coordinate closely to achieve the
 global goal.
@@ -238,11 +238,11 @@ global goal.
         
         print_section("SUMMARY")
         print("""
-OK GVUFD extracts goals from natural language intent
+OK IntentParser extracts goals from natural language intent
 OK Global value function updates based on intent keywords
-OK SPK generates multiple spec candidates
-OK SPK selects spec by value alignment (not just cost)
-OK UVUAS executes with Claude Code loop
+OK Planner generates multiple spec candidates
+OK Planner selects spec by value alignment (not just cost)
+OK Generator executes with Claude Code loop
 OK Complete coordination log shows flow
 
 The 3-tier architecture is now truly coordinated:

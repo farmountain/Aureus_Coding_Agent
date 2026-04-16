@@ -1,18 +1,18 @@
 """
-SPK (Self-Pricing Kernel) - Tier 2 of AUREUS Semantic Compiler
+Planner (Planner) - Tier 2 of AUREUS Semantic Compiler
 
-The SPK is the optimizer and cost analyzer in the 3-tier architecture:
-- GVUFD (Tier 1): Intent → Specification
-- SPK (Tier 2): Specification → Cost (with budget enforcement)
-- UVUAS (Tier 3): Cost-approved specification → Implementation
+The Planner is the optimizer and cost analyzer in the 3-tier architecture:
+- IntentParser (Tier 1): Intent → Specification
+- Planner (Tier 2): Specification → Cost (with budget enforcement)
+- Generator (Tier 3): Cost-approved specification → Implementation
 
-SPK performs:
+Planner performs:
 1. Cost calculation (LOC, dependencies, abstractions)
 2. Budget enforcement (70%/85%/100% thresholds)
 3. Alternative generation (6 fallback strategies)
 4. Risk assessment integration
 
-Like a compiler optimizer, SPK minimizes complexity cost while ensuring constraints.
+Like a compiler optimizer, Planner minimizes complexity cost while ensuring constraints.
 """
 
 from dataclasses import dataclass
@@ -91,7 +91,7 @@ class LinearCostModel:
         
         Args:
             base_cost: Base complexity cost (LOC + deps + abstractions)
-            risk_level: Risk assessment from GVUFD (low/medium/high/critical)
+            risk_level: Risk assessment from IntentParser (low/medium/high/critical)
         
         Returns:
             Additional security cost as percentage of base cost
@@ -342,10 +342,10 @@ class AlternativeGenerator:
 
 class PricingKernel:
     """
-    SPK Pricing Kernel - Main interface for Tier 2
+    Planner Pricing Kernel - Main interface for Tier 2
     
     Calculates complexity cost, enforces budgets, generates alternatives
-    Integrates risk assessment from GVUFD for security cost adjustment
+    Integrates risk assessment from IntentParser for security cost adjustment
     """
     
     def __init__(self):
@@ -357,7 +357,7 @@ class PricingKernel:
         """
         Price a specification against policy budget
         
-        Integrates GVUFD risk assessment for security cost calculation
+        Integrates IntentParser risk assessment for security cost calculation
         
         Returns Cost object with budget status and alternatives if needed
         """
@@ -371,7 +371,7 @@ class PricingKernel:
             estimated_loc=estimated_loc,
             estimated_dependencies=estimated_dependencies,
             estimated_abstractions=estimated_abstractions,
-            risk_level=spec.risk_level  # From GVUFD specification
+            risk_level=spec.risk_level  # From IntentParser specification
         )
         
         total_complexity = base_cost + security_cost

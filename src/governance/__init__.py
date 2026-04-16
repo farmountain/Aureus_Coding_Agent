@@ -1,12 +1,12 @@
-"""AUREUS Governance Layer - Policy, GVUFD, SPK."""
+"""AUREUS Governance Layer - Policy, IntentParser, Planner."""
 from src.governance.policy import PolicyLoader, PolicyValidator, PolicyLoadError
-from src.governance.gvufd import (
+from src.governance.intent_parser import (
     SpecificationGenerator,
     ProjectAnalyzer,
     BudgetAllocator,
     ProjectProfile
 )
-from src.governance.spk import (
+from src.governance.planner import (
     PricingKernel,
     LinearCostModel,
     BudgetEnforcer,

@@ -1,7 +1,7 @@
 # AUREUS Self-Governance Policy
 # 
 # This policy governs how Aureus can modify itself during self-play/self-improvement.
-# It applies the same 3-tier governance (GVUFD→SPK→UVUAS) to Aureus's own code.
+# It applies the same 3-tier governance (IntentParser→Planner→Generator) to Aureus's own code.
 
 version: "1.0"
 

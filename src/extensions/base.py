@@ -7,7 +7,7 @@ Provides foundation for constrained extension system:
 - Hooks (lifecycle automation)
 - MCP (external tools)
 
-All extensions are governed by SPK budget enforcement.
+All extensions are governed by Planner budget enforcement.
 """
 
 from abc import ABC, abstractmethod
@@ -71,7 +71,7 @@ class Extension(ABC):
     Base class for all AUREUS extensions.
     
     Extensions are constrained by:
-    - SPK cost budgets (max_cost)
+    - Planner cost budgets (max_cost)
     - Policy permissions (policy.permissions)
     - Validation rules
     

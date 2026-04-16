@@ -98,7 +98,7 @@ class BuildMemory:
             success: Whether build succeeded
             files_created: List of created file paths
             attempts: Number of attempts needed
-            cost: SPK cost
+            cost: Planner cost
             error: Error message if failed
             resolution: How error was resolved (if applicable)
         """

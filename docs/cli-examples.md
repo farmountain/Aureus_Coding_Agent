@@ -57,7 +57,7 @@ aureus code "add a function to calculate fibonacci numbers"
 ├─ Working set: 8 files (auth.py, app.py, utils.py, ...)
 └─ Current state: 2,341 LOC, 6 modules, 8 deps
 
-📋 Phase 2: Semantic Parsing (GVUFD) (2.1s)
+📋 Phase 2: Semantic Parsing (IntentParser) (2.1s)
 ├─ Intent: "add a function to calculate fibonacci numbers"
 ├─ Detected context: utils.py (math helpers module)
 └─ Generated specification:
@@ -81,7 +81,7 @@ aureus code "add a function to calculate fibonacci numbers"
       "risk_level": "low"
     }
 
-⚖️  Phase 3: Cost Analysis (SPK) (0.3s)
+⚖️  Phase 3: Cost Analysis (Planner) (0.3s)
 ├─ Estimated cost: 15 LOC
 ├─ Budget remaining: 7,659 LOC
 ├─ Threshold: Auto-proceed (< 250 LOC)
@@ -94,7 +94,7 @@ aureus code "add a function to calculate fibonacci numbers"
        - Add docstring
        - Add type hints
 
-🔨 Phase 5: Code Generation (UVUAS) (3.2s)
+🔨 Phase 5: Code Generation (Generator) (3.2s)
 ├─ Executing plan...
 ├─ Modified: src/utils.py
 │   @@ -45,6 +45,20 @@
@@ -155,7 +155,7 @@ aureus code "add user authentication with bcrypt and JWT tokens"
 🔍 Phase 1: Context Loading (0.6s)
 └─ Current state: 2,341 LOC, 6 modules, 8 deps
 
-📋 Phase 2: Semantic Parsing (GVUFD) (4.2s)
+📋 Phase 2: Semantic Parsing (IntentParser) (4.2s)
 └─ Generated specification:
     {
       "success_criteria": [
@@ -177,7 +177,7 @@ aureus code "add user authentication with bcrypt and JWT tokens"
       "risk_level": "medium"
     }
 
-⚖️  Phase 3: Cost Analysis (SPK) (1.1s)
+⚖️  Phase 3: Cost Analysis (Planner) (1.1s)
 ├─ Estimated cost: 420 LOC
 ├─ Budget remaining: 7,659 LOC
 ├─ Threshold: Prompt user (250-600 LOC range)
@@ -270,8 +270,8 @@ aureus code "add complete GraphQL API with subscriptions, federation, and cachin
 **Output**:
 ```
 🔍 Phase 1: Context Loading (0.5s)
-📋 Phase 2: Semantic Parsing (GVUFD) (3.8s)
-⚖️  Phase 3: Cost Analysis (SPK) (1.4s)
+📋 Phase 2: Semantic Parsing (IntentParser) (3.8s)
+⚖️  Phase 3: Cost Analysis (Planner) (1.4s)
 
 ❌ REJECTED: Budget exceeded
 

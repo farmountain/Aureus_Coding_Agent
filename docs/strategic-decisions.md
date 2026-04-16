@@ -71,7 +71,7 @@ TypeScript:
 - Configuration management
 
 Python:
-- Governance logic (GVUFD, SPK)
+- Governance logic (IntentParser, Planner)
 - LLM integration
 - Agent swarm
 
@@ -235,11 +235,11 @@ Source Code
 ```
 Human Intent (natural language)
     ↓
-[GVUFD = Semantic Parser] → Specification (semantic AST)
+[IntentParser = Semantic Parser] → Specification (semantic AST)
     ↓
-[SPK = Optimizer] → Priced Actions (optimized IR)
+[Planner = Optimizer] → Priced Actions (optimized IR)
     ↓
-[UVUAS = Code Generator] → Implementation (executable code)
+[Generator = Code Generator] → Implementation (executable code)
     ↓
 [Reflexion = Peephole Optimizer] → Simplified Code
 ```
@@ -253,11 +253,11 @@ Human Intent (natural language)
 | Traditional Compiler | AUREUS Semantic Compiler | Purpose |
 |---------------------|-------------------------|---------|
 | **Lexer** | Intent parser | Tokenize natural language |
-| **Parser** | GVUFD spec generator | Build semantic AST (spec) |
-| **Type Checker** | SPK budget validator | Enforce constraints |
-| **Optimizer** | SPK cost minimizer | Reduce complexity |
+| **Parser** | IntentParser spec generator | Build semantic AST (spec) |
+| **Type Checker** | Planner budget validator | Enforce constraints |
+| **Optimizer** | Planner cost minimizer | Reduce complexity |
 | **IR Generator** | Plan generator | Create execution plan |
-| **Code Generator** | UVUAS Builder | Emit actual code |
+| **Code Generator** | Generator Builder | Emit actual code |
 | **Peephole Optimizer** | Reflexion agent | Simplify output |
 | **Linker** | Integration verifier | Ensure correctness |
 
@@ -343,9 +343,9 @@ This IS an intermediate representation!
 **AUREUS Semantic Compiler**:
 ```
 1. Remove redundant abstractions (Reflexion)
-2. Minimize LOC delta (SPK alternatives)
+2. Minimize LOC delta (Planner alternatives)
 3. Collapse similar actions (Plan optimizer)
-4. Eliminate unnecessary dependencies (SPK pruning)
+4. Eliminate unnecessary dependencies (Planner pruning)
 ```
 
 Same concept, higher abstraction level!
@@ -406,9 +406,9 @@ Runtime for autonomous value optimization
 
 ### Phase 1-3: Build Semantic Compiler Core
 ```
-Intent → [GVUFD Parser] → Spec (semantic AST)
-       → [SPK Optimizer] → Optimized Plan (IR)  
-       → [UVUAS Codegen] → Implementation
+Intent → [IntentParser Parser] → Spec (semantic AST)
+       → [Planner Optimizer] → Optimized Plan (IR)  
+       → [Generator Codegen] → Implementation
        → [Reflexion] → Simplified Output
 ```
 

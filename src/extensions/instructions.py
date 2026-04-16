@@ -3,7 +3,7 @@ Instruction Extension
 
 Loads persistent instructions from .aureus/instructions.md
 
-Instructions are injected into every AUREUS session but cost-limited by SPK.
+Instructions are injected into every AUREUS session but cost-limited by Planner.
 Similar to Claude Code's CLAUDE.md file.
 """
 

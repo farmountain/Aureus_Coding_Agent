@@ -70,18 +70,18 @@ class Context:
 ---
 
 #### Module 3: `governance`
-**Responsibility**: Tier 1 (GVUFD) + Tier 2 (SPK)
+**Responsibility**: Tier 1 (IntentParser) + Tier 2 (Planner)
 
 **Files**:
-- `governance/gvufd.py` — Spec generator (Tier 1)
+- `governance/intent_parser.py` — Spec generator (Tier 1)
 - `governance/pricing.py` — Cost calculator (Tier 2)
 - `governance/budget.py` — Budget enforcement
 - `governance/policy.py` — Policy schema and validation
 
 **Public Interface**:
 ```python
-# Tier 1: GVUFD
-class GVUFD:
+# Tier 1: IntentParser
+class IntentParser:
     def generate_spec(self, intent: str, context: Context) -> Specification:
         """Convert intent to bounded specification."""
 
@@ -95,7 +95,7 @@ class Specification:
     acceptance_tests: list[Test]
     risk_level: RiskLevel
 
-# Tier 2: Self-Pricing Kernel
+# Tier 2: Planner
 class PricingKernel:
     def calculate_cost(self, action: Action) -> Cost:
         """Calculate complexity cost of action."""
@@ -145,7 +145,7 @@ total_cost = (
 
 **Dependencies**: `memory`, `security`
 
-**LOC Budget**: ≤ 1000 (GVUFD + SPK require substantial logic)
+**LOC Budget**: ≤ 1000 (IntentParser + Planner require substantial logic)
 
 ---
 
@@ -643,7 +643,7 @@ $ aureus code "Add user authentication"
 1. CLI parses command
 2. Initialize session
 3. Load project context (policy, memory, git state)
-4. Call GVUFD to generate specification
+4. Call IntentParser to generate specification
 5. Display specification to user
 6. User confirms or adjusts
 7. Pricing kernel allocates budget
@@ -856,7 +856,7 @@ def execute_in_sandbox(command: str, project_root: str) -> SandboxResult:
 ### Phase 1: Core Foundation (Week 1-2)
 - CLI skeleton
 - Basic orchestrator loop
-- GVUFD spec generator (simple)
+- IntentParser spec generator (simple)
 - Pricing kernel (linear model)
 - File read/write tools
 - Policy schema + loader
@@ -929,7 +929,7 @@ def execute_in_sandbox(command: str, project_root: str) -> SandboxResult:
 | Operation | Target Latency | Notes |
 |-----------|---------------|-------|
 | Context assembly | < 500ms | Lazy loading |
-| GVUFD spec generation | < 2s | LLM-dependent |
+| IntentParser spec generation | < 2s | LLM-dependent |
 | Pricing calculation | < 10ms | Pure computation |
 | Single tool execution | < 5s | File ops |
 | Full planning cycle | < 10s | Excludes LLM |

@@ -1,5 +1,5 @@
 """
-GVUFD (Tier 1) - Global Value Utility Function Designer.
+IntentParser (Tier 1) - Intent Parser.
 
 Converts natural language intent into bounded specifications with:
 - Success criteria
@@ -225,7 +225,7 @@ class BudgetAllocator:
 
 class SpecificationGenerator:
     """
-    Main GVUFD component - generates specifications from intent.
+    Main IntentParser component - generates specifications from intent.
     
     Phase 1: Rule-based generation
     Phase 2+: LLM-enhanced with learning

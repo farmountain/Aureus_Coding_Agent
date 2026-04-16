@@ -1,7 +1,7 @@
 """
 Test Suite for Extension Base Classes
 
-Tests the foundation for AUREUS extension system with SPK budget enforcement.
+Tests the foundation for AUREUS extension system with Planner budget enforcement.
 """
 
 import pytest
@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.interfaces import Policy, Budget
-from src.governance.spk import PricingKernel
+from src.governance.planner import PricingKernel
 
 
 @pytest.fixture

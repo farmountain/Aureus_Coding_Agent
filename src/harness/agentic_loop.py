@@ -4,8 +4,8 @@ Agentic Loop
 Explicit Gather/Act/Verify loop matching Claude Code patterns.
 
 This is the core orchestration loop that:
-1. Gather: Collects context (read-only, Tier 1 GVUFD gate)
-2. Act: Makes changes (mutating, Tier 2 SPK gate)
+1. Gather: Collects context (read-only, Tier 1 IntentParser gate)
+2. Act: Makes changes (mutating, Tier 2 Planner gate)
 3. Verify: Validates results (read-only, tests)
 
 Each phase can have user approval checkpoints in interactive mode.
@@ -52,11 +52,11 @@ class AgenticLoop:
     
     Phases:
     1. GATHER: Read-only context collection
-       - Tier 1 Gate: GVUFD generates specification
+       - Tier 1 Gate: IntentParser generates specification
        - User checkpoint: Approve spec
     
     2. ACT: Mutating operations
-       - Tier 2 Gate: SPK validates cost
+       - Tier 2 Gate: Planner validates cost
        - User checkpoint: Approve changes
     
     3. VERIFY: Validation and testing
@@ -70,8 +70,8 @@ class AgenticLoop:
     def __init__(
         self,
         policy: Policy,
-        gvufd,  # Tier 1: GVUFD generator
-        spk,    # Tier 2: SPK pricing kernel
+        intent_parser,  # Tier 1: IntentParser generator
+        planner,    # Tier 2: Planner pricing kernel
         interactive_mode: bool = False,
         project_root: Optional[Any] = None
     ):
@@ -80,14 +80,14 @@ class AgenticLoop:
         
         Args:
             policy: Governance policy
-            gvufd: GVUFD specification generator
-            spk: SPK pricing kernel
+            intent_parser: IntentParser specification generator
+            planner: Planner pricing kernel
             interactive_mode: Enable user approval checkpoints
             project_root: Project root directory (Path object)
         """
         self.policy = policy
-        self.gvufd = gvufd
-        self.spk = spk
+        self.intent_parser = intent_parser
+        self.planner = planner
         self.interactive_mode = interactive_mode
         self.project_root = project_root or Path.cwd()
         
@@ -115,9 +115,9 @@ class AgenticLoop:
         self.current_phase = LoopPhase.GATHER
         
         try:
-            # === TIER 1 GATE: GVUFD ===
+            # === TIER 1 GATE: IntentParser ===
             # Generate governed specification
-            spec = self.gvufd.generate_spec(
+            spec = self.intent_parser.generate_spec(
                 intent=intent,
                 policy=self.policy
             )
@@ -206,9 +206,9 @@ class AgenticLoop:
             # Plan changes based on specification
             self.planned_changes = self._plan_changes(self.specification)
             
-            # === TIER 2 GATE: SPK ===
+            # === TIER 2 GATE: Planner ===
             # Validate cost of planned changes
-            cost_result = self.spk.price_changes(
+            cost_result = self.planner.price_changes(
                 changes=self.planned_changes,
                 policy=self.policy
             )

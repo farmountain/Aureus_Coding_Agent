@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "AUREUS Specification Schema",
-  "description": "Generated specification from Tier 1 GVUFD",
+  "description": "Generated specification from Tier 1 IntentParser",
   "type": "object",
   "required": ["intent", "success_criteria", "budgets", "risk_level"],
   "properties": {

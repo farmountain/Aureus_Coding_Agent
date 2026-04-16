@@ -56,7 +56,7 @@
 |--------|--------|---------------|
 | CLI | 400 LOC | Argument parsing + output formatting |
 | Harness | 600 LOC | Orchestration loop + session management |
-| Governance | 1000 LOC | GVUFD + SPK (intelligence layer) |
+| Governance | 1000 LOC | IntentParser + Planner (intelligence layer) |
 | Agents | 600 LOC | Single builder agent in Phase 1 |
 | ToolBus | 700 LOC | 4-5 core tools + dispatcher |
 | Memory | 300 LOC | Policy.yaml + history.jsonl |
@@ -145,7 +145,7 @@ TypeScript:
 - Tool bus orchestration
 
 Python:
-- Governance logic (GVUFD, SPK)
+- Governance logic (IntentParser, Planner)
 - LLM integration
 
 Communication: JSON-RPC or stdio
@@ -293,7 +293,7 @@ HARD_LIMIT = 6000            # LOC
 **Phase 2: Self-Governance via Utility Function**
 
 ```python
-class GVUFD:
+class IntentParser:
     def derive_thresholds(self, context: Context) -> Thresholds:
         """
         Dynamically compute thresholds based on project context.
@@ -360,7 +360,7 @@ Where:
 d:\All_Projects\Aureus_Coding_Agent\
 ├── src/                    # ← AUREUS AGENT CODE
 │   ├── agents/            # Builder, Enhanced Builder
-│   ├── governance/        # GVUFD, SPK
+│   ├── governance/        # IntentParser, Planner
 │   ├── memory/            # Trajectory, Summarization
 │   ├── toolbus/           # Tools (Shell, Git, Web, etc.)
 │   │   ├── tools.py              # Base tool protocol
@@ -491,10 +491,10 @@ Improve EnhancedBuilder to use reinforcement learning for
 better plan decomposition based on past success patterns
 """
 
-# GVUFD analyzes Aureus's own codebase
+# IntentParser analyzes Aureus's own codebase
 spec = spec_generator.generate(intent, aureus_policy)
 
-# SPK prices the change to Aureus itself
+# Planner prices the change to Aureus itself
 cost = pricing_kernel.price(spec, aureus_policy)
 
 if cost.within_budget:
@@ -533,7 +533,7 @@ Storage: Serialized ML models, not hardcoded logic
 Location: `/aureus/config/`
 
 ```yaml
-# config/spk_config.yaml - Can be updated by self-play
+# config/planner_config.yaml - Can be updated by self-play
 cost_weights:
   loc_weight: 1.5        # ← Learned from data
   dependency_weight: 5.0 # ← Tuned based on outcomes
@@ -608,10 +608,10 @@ What happens:
 
 ---
 
-#### STEP 2: GVUFD (Tier 1 - Specification)
+#### STEP 2: IntentParser (Tier 1 - Specification)
 
 **Call:** `self.spec_generator.generate(intent, self.policy)`
-- Location: `src/governance/gvufd.py`
+- Location: `src/governance/intent_parser.py`
 
 **Input:** "create a binary search tree..."
 
@@ -634,12 +634,12 @@ What happens:
 
 ---
 
-#### STEP 3: SPK (Tier 2 - Cost Analysis)
+#### STEP 3: Planner (Tier 2 - Cost Analysis)
 
 **Call:** `self.pricing_kernel.price(spec, self.policy)`
-- Location: `src/governance/spk.py`
+- Location: `src/governance/planner.py`
 
-**Input:** Specification from GVUFD
+**Input:** Specification from IntentParser
 
 **Process:**
 1. Calculates base cost = max_loc_delta * LOC_MULTIPLIER
@@ -666,7 +666,7 @@ What happens:
 - Location: `src/agents/builder.py:198`
 
 **Process:**
-1. Constructs comprehensive prompt with GVUFD spec and SPK cost
+1. Constructs comprehensive prompt with IntentParser spec and Planner cost
 2. Calls OpenAI API via `model_provider.complete(prompt)`
 3. OpenAI generates complete BST implementation:
    - TreeNode class with left/right pointers
@@ -683,13 +683,13 @@ What happens:
 
 ---
 
-#### STEP 5: UVUAS (Tier 3 - Coordination)
+#### STEP 5: Generator (Tier 3 - Coordination)
 
 **Current State:** Single agent (BuilderAgent) orchestrates everything
 - Location: `src/agents/builder.py`
 
 **What it does:**
-- Coordinates GVUFD → SPK → Execute → Validate
+- Coordinates IntentParser → Planner → Execute → Validate
 - Manages permissions via PermissionChecker
 - Handles file operations via ToolBus (FileWriteTool)
 - Logs all execution steps
@@ -728,9 +728,9 @@ BuildResult {
   spec: Specification(...),
   cost: Cost(total=3800.0),
   logs: [
-    "GVUFD: Generated specification (3000 LOC budget)",
-    "SPK: Estimated cost 3800.0 (within budget)",
-    "UVUAS: Generated bst.py (245 LOC)",
+    "IntentParser: Generated specification (3000 LOC budget)",
+    "Planner: Estimated cost 3800.0 (within budget)",
+    "Generator: Generated bst.py (245 LOC)",
     "Validation: All checks passed"
   ]
 }
@@ -749,9 +749,9 @@ BuildResult {
 - Context → Generate → Validate
 
 **✅ 3-TIER INTELLIGENCE**
-- Tier 1 (GVUFD): Specification generation
-- Tier 2 (SPK): Cost analysis and budgeting
-- Tier 3 (UVUAS): Coordinated execution
+- Tier 1 (IntentParser): Specification generation
+- Tier 2 (Planner): Cost analysis and budgeting
+- Tier 3 (Generator): Coordinated execution
 
 ---
 

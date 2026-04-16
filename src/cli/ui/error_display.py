@@ -179,7 +179,7 @@ class ErrorFormatter:
         if alternatives:
             lines.append(
                 f"{self.INDENT}{self._colored('🔀', _Colors.CYAN)}  "
-                f"{self._bold(f'SPK suggests {len(alternatives)} alternative(s)')}"
+                f"{self._bold(f'Planner suggests {len(alternatives)} alternative(s)')}"
             )
             for idx, alt in enumerate(alternatives[:4], start=1):
                 desc = alt.get("description", alt.get("strategy", "alternative approach"))
@@ -416,7 +416,7 @@ def format_build_failure(
     error_message:
         The result.error string from a failed BuildResult.
     alternatives:
-        Optional list of SPK alternative dicts.
+        Optional list of Planner alternative dicts.
     budget_status:
         Optional budget_status string from Cost object.
     use_color:

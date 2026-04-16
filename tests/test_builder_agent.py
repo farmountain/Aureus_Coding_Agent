@@ -1,9 +1,9 @@
 """
-Test Suite for Builder Agent (UVUAS Tier 3)
+Test Suite for Builder Agent (Generator Tier 3)
 
 Tests the complete 3-tier integration:
-- GVUFD (Tier 1): Specification generation
-- SPK (Tier 2): Cost pricing and budget enforcement
+- IntentParser (Tier 1): Specification generation
+- Planner (Tier 2): Cost pricing and budget enforcement
 - Tool Bus: Permission-gated tool execution
 """
 
@@ -95,7 +95,7 @@ class TestBuilderAgent:
         assert len(result.specification.success_criteria) > 0
     
     def test_build_calculates_cost(self, builder_agent):
-        """Test build calculates cost via SPK"""
+        """Test build calculates cost via Planner"""
         intent = "Create utility function"
         result = builder_agent.build(intent)
         
@@ -265,16 +265,16 @@ class TestEndToEndIntegration:
     """Test complete end-to-end integration"""
     
     def test_complete_workflow(self, builder_agent):
-        """Test complete GVUFD → SPK → UVUAS workflow"""
+        """Test complete IntentParser → Planner → Generator workflow"""
         intent = "Create a simple calculator function"
         
         # Execute complete workflow
         result = builder_agent.build(intent)
         
         # Verify all tiers executed
-        assert result.specification is not None  # GVUFD
-        assert result.cost is not None  # SPK
-        assert isinstance(result.success, bool)  # UVUAS
+        assert result.specification is not None  # IntentParser
+        assert result.cost is not None  # Planner
+        assert isinstance(result.success, bool)  # Generator
         
         # Check execution log shows all steps
         log = builder_agent.get_execution_log()

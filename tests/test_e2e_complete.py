@@ -2,7 +2,7 @@
 End-to-End Integration Tests for Complete AUREUS Pipeline
 
 Tests the full compilation pipeline:
-Intent → GVUFD → SPK → EnhancedBuilder → Memory → Verification
+Intent → IntentParser → Planner → EnhancedBuilder → Memory → Verification
 
 These tests validate that all 3 tiers work together seamlessly with memory.
 """
@@ -16,8 +16,8 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.interfaces import Policy, Budget
-from src.governance.gvufd import SpecificationGenerator
-from src.governance.spk import PricingKernel
+from src.governance.intent_parser import SpecificationGenerator
+from src.governance.planner import PricingKernel
 from src.agents.builder_enhanced import EnhancedBuilderAgent
 from src.memory.trajectory import TrajectoryStore
 from src.memory.cost_ledger import CostLedger
@@ -69,12 +69,12 @@ class TestCompleteE2EPipeline:
         """
         Test complete pipeline for a simple feature
         
-        Pipeline: Intent → GVUFD → SPK → EnhancedBuilder → Memory
+        Pipeline: Intent → IntentParser → Planner → EnhancedBuilder → Memory
         """
         # Step 1: Define intent
         intent = "Add a greeting function that returns 'Hello, World!'"
         
-        # Step 2: GVUFD - Generate specification
+        # Step 2: IntentParser - Generate specification
         spec_generator = SpecificationGenerator()
         spec = spec_generator.generate(intent, test_policy)
         
@@ -83,7 +83,7 @@ class TestCompleteE2EPipeline:
         assert len(spec.success_criteria) > 0
         assert spec.budgets is not None
         
-        # Step 3: SPK - Price specification
+        # Step 3: Planner - Price specification
         pricing_kernel = PricingKernel()
         cost_result = pricing_kernel.price(spec, test_policy)
         

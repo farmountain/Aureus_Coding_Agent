@@ -7,7 +7,7 @@ Constrained extension architecture for:
 - Hooks (lifecycle automation)
 - MCP integration (future)
 
-All extensions are governed by SPK budgets.
+All extensions are governed by Planner budgets.
 """
 
 from src.extensions.base import (

@@ -548,7 +548,7 @@ class CodeCommand(BaseCommand):
         except PolicyLoadError as e:
             raise CLIError(f"Failed to load policy: {e}")
         
-        # Implement full GVUFD -> SPK -> UVUAS pipeline
+        # Implement full IntentParser -> Planner -> Generator pipeline
         try:
             from src.agents.builder import BuilderAgent
             from src.model_provider import ModelProviderFactory, TaskType

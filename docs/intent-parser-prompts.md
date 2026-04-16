@@ -1,14 +1,14 @@
-# GVUFD Prompt Engineering Guide
+# IntentParser Prompt Engineering Guide
 
-**Component**: Tier 1 - Global Value Utility Function Designer  
+**Component**: Tier 1 - Intent Parser  
 **Purpose**: Transform natural language intent → formal specification  
-**Critical Success Factor**: Quality of GVUFD directly determines quality of implementation
+**Critical Success Factor**: Quality of IntentParser directly determines quality of implementation
 
 ---
 
 ## Overview
 
-GVUFD is the "intelligence layer" that understands user intent and generates bounded specifications. It must:
+IntentParser is the "intelligence layer" that understands user intent and generates bounded specifications. It must:
 
 1. **Understand ambiguous natural language** ("add auth")
 2. **Generate specific success criteria** (what "done" means)
@@ -23,7 +23,7 @@ GVUFD is the "intelligence layer" that understands user intent and generates bou
 ## System Prompt
 
 ```markdown
-# GVUFD - Global Value Utility Function Designer
+# IntentParser - Intent Parser
 
 You are the specification generator for AUREUS, an intelligent coding agent with governance.
 
@@ -131,7 +131,7 @@ See examples section below for complete examples of high-quality specifications.
 ## Important Notes
 
 - Your spec guides the entire implementation - be precise
-- SPK will validate cost - be realistic about budgets
+- Planner will validate cost - be realistic about budgets
 - Agents will follow your success criteria exactly
 - Users see your output - use clear language
 - Learn from overrides - if users consistently exceed budgets, adjust model
@@ -620,7 +620,7 @@ def is_testable(self, criterion: str) -> bool:
 ### Observing Outcomes
 
 ```python
-class GVUFDLearner:
+class IntentParserLearner:
     """Learns from spec outcomes."""
     
     def observe_outcome(self, spec: Specification, result: Result):
@@ -668,17 +668,17 @@ class GVUFDLearner:
 
 ## Error Handling
 
-### When GVUFD Fails
+### When IntentParser Fails
 
 ```python
-class GVUFDError(AUREUSError):
-    """GVUFD could not generate valid spec."""
+class IntentParserError(AUREUSError):
+    """IntentParser could not generate valid spec."""
     pass
 
 # Handle gracefully
 try:
-    spec = gvufd.generate_specification(intent, context)
-except GVUFDError as e:
+    spec = intent_parser.generate_specification(intent, context)
+except IntentParserError as e:
     return Result.abandoned(
         reason="Could not understand request",
         details=str(e),
@@ -692,16 +692,16 @@ except GVUFDError as e:
 
 ---
 
-## Testing GVUFD
+## Testing IntentParser
 
 ### Unit Tests
 
 ```python
-def test_gvufd_simple_feature():
-    """GVUFD generates reasonable spec for simple feature."""
+def test_intent_parser_simple_feature():
+    """IntentParser generates reasonable spec for simple feature."""
     
-    gvufd = GVUFD()
-    spec = gvufd.generate_specification(
+    intent_parser = IntentParser()
+    spec = intent_parser.generate_specification(
         intent="add helper function to format timestamps",
         context=test_context
     )
@@ -710,11 +710,11 @@ def test_gvufd_simple_feature():
     assert spec.budgets.max_loc < 100
     assert spec.risk_level == RiskLevel.LOW
 
-def test_gvufd_complex_feature():
-    """GVUFD allocates larger budget for complex feature."""
+def test_intent_parser_complex_feature():
+    """IntentParser allocates larger budget for complex feature."""
     
-    gvufd = GVUFD()
-    spec = gvufd.generate_specification(
+    intent_parser = IntentParser()
+    spec = intent_parser.generate_specification(
         intent="add user authentication with JWT",
         context=test_context
     )
@@ -724,20 +724,20 @@ def test_gvufd_complex_feature():
     assert spec.risk_level in [RiskLevel.MEDIUM, RiskLevel.HIGH]
     assert spec.budgets.max_new_dependencies >= 1
 
-def test_gvufd_learns_from_overrides():
-    """GVUFD adjusts budgets based on user overrides."""
+def test_intent_parser_learns_from_overrides():
+    """IntentParser adjusts budgets based on user overrides."""
     
-    gvufd = GVUFD()
+    intent_parser = IntentParser()
     
     # Simulate 10 overrides where user needed 2x estimated LOC
     for _ in range(10):
-        spec = gvufd.generate_specification("add feature", test_context)
-        gvufd.observe_outcome(spec, Result(actual_loc=spec.budgets.max_loc * 2))
+        spec = intent_parser.generate_specification("add feature", test_context)
+        intent_parser.observe_outcome(spec, Result(actual_loc=spec.budgets.max_loc * 2))
     
-    gvufd.refine_model()
+    intent_parser.refine_model()
     
     # New specs should have higher budgets
-    new_spec = gvufd.generate_specification("add feature", test_context)
+    new_spec = intent_parser.generate_specification("add feature", test_context)
     assert new_spec.budgets.max_loc > spec.budgets.max_loc
 ```
 
@@ -745,7 +745,7 @@ def test_gvufd_learns_from_overrides():
 
 ## Conclusion
 
-GVUFD prompt engineering is **the most critical component** of AUREUS quality. Follow these principles:
+IntentParser prompt engineering is **the most critical component** of AUREUS quality. Follow these principles:
 
 1. ✅ **Conservative budgets** - start small, user can override
 2. ✅ **Specific criteria** - testable, concrete outcomes

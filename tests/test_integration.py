@@ -2,7 +2,7 @@
 End-to-End Integration Tests for Complete 3-Tier Architecture
 
 Tests the complete pipeline:
-GVUFD (Tier 1) → SPK (Tier 2) → UVUAS (Tier 3)
+IntentParser (Tier 1) → Planner (Tier 2) → Generator (Tier 3)
 
 Validates:
 - Specification generation from intent
@@ -16,8 +16,8 @@ import pytest
 from pathlib import Path
 from src.interfaces import Policy, Budget
 from src.agents import BuilderAgent
-from src.governance.gvufd import SpecificationGenerator
-from src.governance.spk import PricingKernel
+from src.governance.intent_parser import SpecificationGenerator
+from src.governance.planner import PricingKernel
 
 
 @pytest.fixture
@@ -72,16 +72,16 @@ class TestCompleteWorkflow:
         assert result.specification is not None
         assert result.specification.intent == intent
         
-        # Verify specification was generated (GVUFD)
+        # Verify specification was generated (IntentParser)
         assert len(result.specification.success_criteria) > 0
         assert result.specification.budgets is not None
         
-        # Verify cost was calculated (SPK)
+        # Verify cost was calculated (Planner)
         assert result.cost is not None
         assert result.cost.total > 0
         assert result.cost.within_budget is True
         
-        # Verify files were created (UVUAS)
+        # Verify files were created (Generator)
         assert len(result.files_created) > 0
         
         # Verify execution log tracks all tiers
@@ -172,7 +172,7 @@ class TestCompleteWorkflow:
             assert len(result.specification.security_considerations) > 0
     
     def test_spec_generator_integration(self, integration_policy):
-        """Test GVUFD (Tier 1) integration"""
+        """Test IntentParser (Tier 1) integration"""
         spec_gen = SpecificationGenerator()
         
         intent = "Create REST API endpoint for user management"
@@ -186,7 +186,7 @@ class TestCompleteWorkflow:
         assert spec.risk_level in ["low", "medium", "high", "critical"]
     
     def test_pricing_kernel_integration(self, integration_policy, integration_project):
-        """Test SPK (Tier 2) integration"""
+        """Test Planner (Tier 2) integration"""
         from src.interfaces import Specification, SpecificationBudget
         
         # Create test specification

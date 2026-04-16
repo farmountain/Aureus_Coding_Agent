@@ -2,7 +2,7 @@
 
 ## Overview
 
-Successfully implemented tight coordination between GVUFD → SPK → UVUAS, transforming them from independent pipelines into a coordinated intelligence system.
+Successfully implemented tight coordination between IntentParser → Planner → Generator, transforming them from independent pipelines into a coordinated intelligence system.
 
 ## What Was Built
 
@@ -54,23 +54,23 @@ Robust variant: 4824 cost, 0.79 alignment
 - Refinement triggered if misaligned
 
 ### 4. Three-Tier Coordinator (`ThreeTierCoordinator`)
-**Purpose**: Orchestrates complete GVUFD → SPK → UVUAS flow
+**Purpose**: Orchestrates complete IntentParser → Planner → Generator flow
 
 **Coordination Steps**:
 
-#### Tier 1: GVUFD - Intent → Goals + Spec
+#### Tier 1: IntentParser - Intent → Goals + Spec
 1. Extract goals from intent (intent_extractor)
 2. Update global value function with derived weights
 3. Set optimization target
 4. Generate base specification
 
-#### Tier 2: SPK - Spec Variants → Value-Aligned Selection
+#### Tier 2: Planner - Spec Variants → Value-Aligned Selection
 1. Generate spec candidates (base, simple, robust)
 2. Calculate cost for each
 3. Evaluate alignment score for each
 4. Select best spec (highest alignment + within budget)
 
-#### Tier 3: UVUAS - Claude Code Loop
+#### Tier 3: Generator - Claude Code Loop
 1. Gather context from workspace
 2. Execute with alignment checking
 3. Reflect and decide refinement
@@ -103,7 +103,7 @@ Intent: 'build a production-ready API client'
 ✓ Selected spec: 0.79 alignment
 ```
 
-### Test 3: SPK Value-Based Selection
+### Test 3: Planner Value-Based Selection
 ```
 3 candidates evaluated:
 - Base: 3400 cost, 0.79 alignment
@@ -114,9 +114,9 @@ Intent: 'build a production-ready API client'
 
 ### Test 4: Full Coordination Flow
 ```
-✓ TIER 1: GVUFD executed
-✓ TIER 2: SPK executed
-✓ TIER 3: UVUAS executed
+✓ TIER 1: IntentParser executed
+✓ TIER 2: Planner executed
+✓ TIER 3: Generator executed
 ✓ Complete coordination log captured
 ✓ Each tier informed the next
 ```
@@ -132,44 +132,44 @@ Intent: 'build a production-ready API client'
 ## Key Architectural Insights
 
 ### 1. Not a Pipeline - A Coordination System
-**Before**: GVUFD → SPK → UVUAS (sequential, independent)
+**Before**: IntentParser → Planner → Generator (sequential, independent)
 **After**: Coordinated system where each tier informs the others
 
 ### 2. Intent Shapes Everything
 User says "simple" → entire system adapts:
-- GVUFD prioritizes simplicity
-- SPK evaluates specs by simplicity alignment
-- UVUAS generates minimal code
+- IntentParser prioritizes simplicity
+- Planner evaluates specs by simplicity alignment
+- Generator generates minimal code
 - All tiers aligned on same goal
 
 ### 3. Value-Based Selection
-**Before**: SPK selects cheapest spec
-**After**: SPK selects highest value alignment within budget
+**Before**: Planner selects cheapest spec
+**After**: Planner selects highest value alignment within budget
 
 ### 4. Continuous Alignment Checking
 **Before**: Generate once, hope it's good
 **After**: Validate at every step, refine if misaligned
 
 ### 5. Feedback Loops
-Warnings from UVUAS can trigger:
-- SPK re-evaluation (different spec variant)
-- GVUFD re-specification (adjusted goals)
+Warnings from Generator can trigger:
+- Planner re-evaluation (different spec variant)
+- IntentParser re-specification (adjusted goals)
 - Iterative refinement (3 attempts)
 
 ## Coordination Log Example
 
 ```
-[3-TIER] TIER 1: GVUFD - Extracting goals from intent
+[3-TIER] TIER 1: IntentParser - Extracting goals from intent
 [3-TIER] Extracted goals: ['simplicity']
 [3-TIER] Optimization target: maximize_speed
 [3-TIER] Updated simplicity weight to 0.3
 [3-TIER] Set optimization target: maximize_speed
-[3-TIER] TIER 2: SPK - Evaluating specification candidates
+[3-TIER] TIER 2: Planner - Evaluating specification candidates
 [3-TIER] Base spec: 3400.0 cost, budget OK: True
 [3-TIER] Simple variant: 2430.0 cost
 [3-TIER] Robust variant: 4824.0 cost
 [3-TIER] Selected spec with alignment score: 0.83
-[3-TIER] TIER 3: UVUAS - Executing with Claude Code loop
+[3-TIER] TIER 3: Generator - Executing with Claude Code loop
 [3-TIER] Context: Found 2 relevant files
 [3-TIER] Warnings: code_quality: 0.50 < 0.70
 [3-TIER] Refinement needed: Please refine to address quality
@@ -185,8 +185,8 @@ Warnings from UVUAS can trigger:
 ### Modified Files:
 - `src/agents/builder.py`: Added coordinator, coordinated_build()
 - `src/memory/global_value_function.py`: Used for alignment checking
-- `src/governance/gvufd.py`: Provides spec generation
-- `src/governance/spk.py`: Provides cost calculation
+- `src/governance/intent_parser.py`: Provides spec generation
+- `src/governance/planner.py`: Provides cost calculation
 
 ## Usage Example
 
@@ -231,15 +231,15 @@ print(f"Optimization: {result.metadata['optimization_target']}")
 1. **Enhanced Goal Extraction**: Use LLM for nuanced intent parsing
 2. **More Spec Variants**: 5-10 candidates instead of 3
 3. **Learning**: Track which alignments lead to better results
-4. **Multi-Agent**: Extend to full UVUAS swarm with coordination
-5. **Feedback Learning**: Use UVUAS warnings to improve GVUFD
+4. **Multi-Agent**: Extend to full Generator swarm with coordination
+5. **Feedback Learning**: Use Generator warnings to improve IntentParser
 
 ## Conclusion
 
 The 3-tier architecture is now truly coordinated:
-- ✅ GVUFD extracts goals and updates global value function
-- ✅ SPK selects specs by value alignment (not just cost)
-- ✅ UVUAS executes with Claude Code loop + alignment checking
+- ✅ IntentParser extracts goals and updates global value function
+- ✅ Planner selects specs by value alignment (not just cost)
+- ✅ Generator executes with Claude Code loop + alignment checking
 - ✅ All tiers informed by user intent
 - ✅ Continuous feedback loops between tiers
 

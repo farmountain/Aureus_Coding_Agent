@@ -32,17 +32,17 @@ result = agent.build("create a hello world function")
 
 print(f"\nSuccess: {result.success}")
 print(f"Files created: {result.files_created}")
-print("\n=== GVUFD Spec (Tier 1) ===")
+print("\n=== IntentParser Spec (Tier 1) ===")
 print(f"Intent: {result.specification.intent}")
 print(f"Risk level: {result.specification.risk_level}")
 print(f"Max LOC budget: {result.specification.budgets.max_loc_delta}")
 
-print("\n=== SPK Cost (Tier 2) ===")
+print("\n=== Planner Cost (Tier 2) ===")
 print(f"Total cost: {result.cost.total}")
 print(f"LOC cost: {result.cost.loc}")
 print(f"Within budget: {result.cost.within_budget}")
 
-print("\n=== UVUAS Generated Code (Tier 3) ===")
+print("\n=== Generator Generated Code (Tier 3) ===")
 if result.files_created:
     file_path = result.files_created[0]
     if Path(file_path).exists():
@@ -65,7 +65,7 @@ result2 = agent.build("create a calculator class with add and subtract methods")
 
 print(f"\nSuccess: {result2.success}")
 print(f"Files created: {result2.files_created}")
-print(f"SPK Total cost: {result2.cost.total}")
+print(f"Planner Total cost: {result2.cost.total}")
 
 if result2.files_created:
     file_path = result2.files_created[0]
